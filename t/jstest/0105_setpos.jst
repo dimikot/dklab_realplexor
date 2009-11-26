@@ -1,0 +1,34 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: setCursor() test
+</div>
+
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		substituteResponse([
+			[
+				{ identifier: '10:AAA', data: "'aaa'" },
+				{ identifier: '10:BBB', data: "'bbb'" }
+			]
+		]);
+		var func = function(r, id) { 
+			JsTest.write(id + ": callback called with data: \n" + r + "\n\n");
+		};
+		realplexor.setCursor('AAA', 5);
+		realplexor.subscribe('AAA', func);
+		realplexor.execute();
+		setTimeout(function() { JsTest.analyze() }, 700);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Request: /?identifier=5:AAA 
+AAA: callback called with data:  
+aaa 
+ 
+Request: /?identifier=10:AAA
+</pre>

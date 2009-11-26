@@ -1,0 +1,35 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: no warning in debug console if server disconnected
+</div>
+
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		substituteResponse([
+			null
+		]);
+		realplexor._realplexor._error = function(prefix, msg) { JsTest.write(prefix + "\n" + msg + "\n\n"); }
+		realplexor._realplexor._log = function(msg) { JsTest.write(msg + "\n\n"); }
+
+		realplexor.subscribe('AAA', function(r, id) { 
+			JsTest.write("Callback called for ID=" + id + ": \n" + r + "\n\n"); 
+		});
+		realplexor._realplexor.JS_WAIT_TIMEOUT = 0;
+		realplexor.execute();
+		
+		setTimeout(function() { JsTest.analyze() }, 700);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Request: /?identifier=AAA 
+Disconnect detected 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=AAA 
+</pre>

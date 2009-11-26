@@ -1,0 +1,1 @@
+SCRIPT stub: [$SCRIPT_ID].

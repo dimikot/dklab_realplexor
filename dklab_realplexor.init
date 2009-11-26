@@ -1,0 +1,122 @@
+#!/bin/bash
+# Start/stop the dklab_realplexor daemon.
+#
+# chkconfig: - 85 15
+# description: Dklab Realplexor: Comet server which handles 1000000+ parallel browser connections.
+# processname: dklab_realplexor.pl
+# config: /etc/dklab_realplexor.conf
+# pidfile: /var/run/dklab_realplexor_*.pid
+#
+### BEGIN INIT INFO
+# Provides:          dklab_realplexor
+# Required-Start:    
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      1
+# Short-Description: Dklab Realplexor Comet Server.
+# Description:       Dklab Realplexor: Comet server which handles 1000000+ parallel browser connections.
+### END INIT INFO
+
+#
+# If you store dklab_realplexor in a different location, 
+# it is recommended not to change CWD, but run:
+#
+# ln -s /path/to/your/dklab_realplexor /opt/dklab_realplexor
+#
+# If you want to change some variables, it is recommended
+# to put these changes to /etc/default/YOUR_INIT_SCRIPT_NAME
+# (typically /etc/default/dklab_realplexor). All variables 
+# defined there will override current script.
+#
+CWD="/opt/dklab_realplexor"
+
+# Same as with additional config: better create symlink in /etc.
+ADDCONFIG="/etc/dklab_realplexor.conf"
+
+# Logging options. By default syslog is used, it allows easy log rotation.
+LOGTAG="dklab_realplexor"
+LOGPRI="local3.info"
+
+# Prefix for PID file.
+PIDPREFIX="/var/run/dklab_realplexor"
+
+# Override settings if needed.
+NAME=`basename $0`
+if [ ${NAME:0:1} = "S" -o ${NAME:0:1} = "K" ]; then
+    NAME=${NAME:3}
+fi
+[ -f /etc/default/${NAME} ] && . /etc/default/${NAME}
+[ -f /etc/sysconfig/${NAME} ] && . /etc/sysconfig/${NAME}
+
+# Script to execute.
+BIN="$CWD/dklab_realplexor.pl"
+
+
+start () {
+	for CONF in $ADDCONFIG; do
+		PIDFILE=${PIDPREFIX}_`basename $CONF`.pid
+		PID=`cat $PIDFILE 2>/dev/null`
+		if [ "$PID" != "" ] && kill -s 0 $PID 2>/dev/null; then
+			echo "dklab_realplexor for $CONF is already running"
+		else
+			rm -f $PIDFILE 2>/dev/null
+			cd $CWD && /usr/bin/perl $BIN $CONF -p $PIDFILE 2>&1 | logger -p $LOGPRI -t "realplexor/`basename $CONF`" &
+			sleep 1
+			PID=`cat $PIDFILE 2>/dev/null`
+			if [ "$PID" != "" ]; then
+				echo "OK: $CONF"
+			else
+				echo "FAILED: $CONF; see logs"
+			fi
+		fi
+	done
+}
+
+stop () {
+	for CONF in $ADDCONFIG; do
+		PIDFILE=${PIDPREFIX}_`basename $CONF`.pid
+		PID=`cat $PIDFILE 2>/dev/null`
+		if [ "$PID" == "" ]; then
+			echo "dklab_realplexor for $CONF is not running (pid file is empty)"
+		else
+			kill $PID
+			echo "OK: $CONF"
+		fi
+	done
+}
+
+reload () {
+	for CONF in $ADDCONFIG; do
+		PIDFILE=${PIDPREFIX}_`basename $CONF`.pid
+		PID=`cat $PIDFILE 2>/dev/null`
+		if [ "$PID" == "" ]; then
+			echo "dklab_realplexor for $CONF is not running (pid file is empty)"
+			start
+		else
+			# Send SIGHUP to process group.
+			kill -s 1 $PID
+			echo "OK: $CONF"
+		fi
+	done
+}
+
+case $1 in
+	start)
+		start
+	;;
+	stop)
+		stop
+	;;
+	restart)
+		stop
+		start
+	;;
+	reload)
+		reload
+	;;
+	*)
+		echo "Usage:"
+		echo "  $0 {start|stop|restart|reload}"
+		exit 1
+	;;
+esac

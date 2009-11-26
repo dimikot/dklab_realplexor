@@ -1,0 +1,255 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: JS callback error is not bounce
+</div>
+
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		var resps = [];
+		// Last message must be "Next query in 10 ms" (after 11 requests), 
+		// because JS callback error is NOT a bounce.
+		for (var i = 0; i < 11; i++) {
+			resps.push([ { identifier: '10:AAA', data: "'aaa'" } ]);
+		}
+		substituteResponse(resps);
+		var func = function(r, id) { 
+			JsTest.write(id + ": callback called with data: \n" + r + "\n\n");
+			throw "Error emulation!";
+		};
+		realplexor._realplexor._error = function(prefix, msg) { JsTest.write(prefix + "\n" + msg + "\n\n"); }
+		realplexor._realplexor._log = function(msg) { JsTest.write(msg + "\n\n"); }
+		realplexor.setCursor('AAA', 5);
+		realplexor.subscribe('AAA', func);
+		realplexor.subscribe('BBB', func);
+		realplexor.execute();
+		setTimeout(function() { JsTest.analyze() }, 4000);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Request: /?identifier=5:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB 
+Received response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": 'aaa' 
+  } 
+] 
+ 
+ 
+AAA: callback called with data:  
+aaa 
+ 
+Error executing callback #0 for ID AAA: Error emulation! 
+Data: 
+aaa 
+ 
+Next query in 10 ms 
+ 
+Request: /?identifier=10:AAA,BBB
+</pre>

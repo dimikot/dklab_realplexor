@@ -1,0 +1,86 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: response cannot be evaled
+</div>
+
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		substituteResponse([
+			// Error.
+			[
+				{ identifier: '10:AAA', data: '"aaa"' },
+				{ identifier: '10:AAA', data: 'bbb' }
+			],
+			// OK.
+			[
+				{ identifier: '20:AAA', data: "'ccc'" },
+				{ identifier: '20:AAA', data: '["ddd", "eee"]' }
+			],
+			// JSON parse error.
+			[
+				{ identifier: '30:AAA', data: '["ddd", "eee"' }
+			],
+			// Then OK.
+			[
+				{ identifier: '40:AAA', data: '"ok"' }
+			]
+		]);
+		realplexor.subscribe('AAA', function(r, id) { 
+			JsTest.write(id + ": callback called with data: \n" + r + "\n\n"); 
+		});
+		// We must replace error message (prefix) to "Syntax error!",
+		// because different browsers has different error messages.
+		realplexor._realplexor._error = function(prefix, msg) { JsTest.write('Syntax error!' + "\n" + msg + "\n\n"); }
+		//realplexor._realplexor._log = function(msg) { JsTest.write(msg + "\n\n"); }
+
+		realplexor.execute();
+		setTimeout(function() { JsTest.analyze() }, 3000);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Request: /?identifier=AAA 
+Syntax error! 
+Response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": "aaa" 
+  }, 
+  { 
+    "ids": { "AAA": 10 }, 
+    "data": bbb 
+  } 
+] 
+ 
+ 
+Request: /?identifier=AAA 
+AAA: callback called with data:  
+ccc 
+ 
+AAA: callback called with data:  
+ddd,eee 
+ 
+Request: /?identifier=20:AAA 
+Syntax error! 
+Response: 
+  
+[ 
+  { 
+    "ids": { "AAA": 30 }, 
+    "data": ["ddd", "eee" 
+  } 
+] 
+ 
+ 
+Request: /?identifier=20:AAA 
+AAA: callback called with data:  
+ok 
+ 
+Request: /?identifier=40:AAA 
+</pre>

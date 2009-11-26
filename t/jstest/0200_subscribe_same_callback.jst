@@ -1,0 +1,42 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: we must not skip callback calls even if a single callback is subscribed to 2 IDs and the same data is passed to these 2 IDs
+</div>
+<!-- 
+Because it is an caller's code logic if we should skip the same data or not. 
+Assume we have subscribed the same callback to 2 IDs: "public" (listens for 
+all events) and "my" (listens for my events only). An event for IDs "my,public"
+arrived. If we want to skip a callback call, should we skip the first call
+(to "public" ID) or the second one? Indefinite. So we should not skip anything.
+-->
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		substituteResponse([
+			[
+				{ identifier: '10:AAA,10:BBB', data: "'aaa'" },
+			],
+		]);
+		var callback = function(r, id) { 
+			JsTest.write("Callback called for ID=" + id + ": \n" + r + "\n\n"); 
+		};
+		realplexor.subscribe('AAA', callback);
+		realplexor.subscribe('BBB', callback);
+		realplexor.execute();
+		setTimeout(function() { JsTest.analyze() }, 700);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Request: /?identifier=AAA,BBB 
+Callback called for ID=AAA:  
+aaa 
+ 
+Callback called for ID=BBB:  
+aaa 
+ 
+Request: /?identifier=10:AAA,10:BBB 
+</pre>

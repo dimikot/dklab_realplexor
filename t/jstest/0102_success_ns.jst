@@ -1,0 +1,62 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: success requests series (with namespaces)
+</div>
+
+<script>
+window.NAMESPACE = "ns_";
+</script>
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		substituteResponse([
+			[
+				{ identifier: '10:ns_AAA', data: "'aaa'" },
+				{ identifier: '10:ns_AAA', data: "'bbb'" }
+			],
+			[
+				{ identifier: '20:ns_AAA', data: "'ccc'" },
+				{ identifier: '20:ns_AAA', data: "'ddd'" }
+			],
+			// JS part does not filter responses by cursors, so the
+			// following responses will be received too.
+			[
+				{ identifier: '10:ns_AAA', data: "'xxx'" },
+				{ identifier: '10:ns_AAA', data: "'yyy'" }
+			]
+		]);
+		realplexor.subscribe('AAA', function(r, id) { 
+			JsTest.write("Callback called for ID=" + id + ": \n" + r + "\n\n"); 
+		});
+		realplexor.execute();
+		setTimeout(function() { JsTest.analyze() }, 700);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Request: /?identifier=ns_AAA 
+Callback called for ID=AAA:  
+aaa 
+ 
+Callback called for ID=AAA:  
+bbb 
+ 
+Request: /?identifier=10:ns_AAA 
+Callback called for ID=AAA:  
+ccc 
+ 
+Callback called for ID=AAA:  
+ddd 
+ 
+Request: /?identifier=20:ns_AAA 
+Callback called for ID=AAA:  
+xxx 
+ 
+Callback called for ID=AAA:  
+yyy 
+ 
+Request: /?identifier=10:ns_AAA
+</pre>

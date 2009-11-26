@@ -1,0 +1,44 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: incomplete response detection
+</div>
+
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		var resps = [];
+		for (var i = 0; i < 1; i++) { // 1 iteration is enough, see next test
+			resps.push("{}");
+		}
+		substituteResponse(resps);
+		var func = function(r, id) { 
+			JsTest.write(id + ": callback called with data: \n" + r + "\n\n");
+		};
+		realplexor._realplexor._error = function(prefix, msg) { JsTest.write(prefix + "\n" + msg + "\n\n"); }
+		realplexor._realplexor._log = function(msg) { JsTest.write(msg + "\n\n"); }
+		realplexor.setCursor('AAA', 5);
+		realplexor.subscribe('AAA', func);
+		realplexor.subscribe('BBB', func);
+		realplexor.execute();
+		setTimeout(function() { JsTest.analyze() }, 1000);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Request: /?identifier=5:AAA,BBB 
+Received response: 
+{} 
+ 
+Bounce detected (bounceCount = 1) 
+ 
+Response is not a complete JSON 
+Response: 
+{} 
+ 
+Next query in 10 ms 
+
+Request: /?identifier=5:AAA,BBB 
+</pre>

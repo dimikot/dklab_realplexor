@@ -1,0 +1,15 @@
+/**
+ * JsTest: JavaScript asynchronous testing framework (stylesheets).
+ *
+ * @license LGPL
+ * @author Dmitry Koterov, http://en.dklab.ru
+ * @version 1.x $Id$
+ */
+#TEST { border: 2px solid red; margin-bottom: 1em; padding:5px }
+#FILE, .file { overflow:auto; border: 1px dashed blue; width:48%; height:1000%; float:right; background-color: #EEEEFF; margin:0px; margin-bottom: 1em; padding:5px; font-size: 0.7em }
+.file { height: auto }
+#EXPECT { overflow:auto; border: 1px dashed green; width:48%; height:1000%; float:left; background-color: #EEFFEE; margin:0px; margin-bottom: 1em; padding:5px; font-size: 0.7em }
+#form { border: 2px solid black; margin-bottom: 1em; padding:5px }
+.error { background-color: #FFBBBB !IMPORTANT } 
+.success { background-color: #EEFFEE; border-color:green !IMPORTANT } 
+.skip { background-color: #FFFF00; border-color:#CCCC00 !IMPORTANT } 

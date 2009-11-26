@@ -1,0 +1,2 @@
+AddHandler application/x-httpd-php jst
+php_flag output_buffering On

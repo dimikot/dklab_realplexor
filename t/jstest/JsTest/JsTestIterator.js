@@ -3,7 +3,6 @@
  *
  * @license LGPL
  * @author Dmitry Koterov, http://en.dklab.ru
- * @version 1.x $Id$
  */
 
 var JsTestIterator = {

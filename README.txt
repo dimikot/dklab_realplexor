@@ -1,4 +1,4 @@
-Dklab Realplexor v1.21: Comet server which handles 1000000+ parallel browser connections.
+Dklab Realplexor v1.22: Comet server which handles 1000000+ parallel browser connections.
 Author: Dmitry Koterov, dkLab (C)
 Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
@@ -93,6 +93,9 @@ events
 
 CHANGELOG
 ---------
+
+* Dklab Realplexor 2009-12-24: v1.22
+  - [BUG] SIGPIPE causes the script to restart on some unexpected client's disconnects.
 
 * Dklab Realplexor 2009-12-22: v1.21
   - [NEW] ID queue is cleaned after CLEAN_ID_AFTER seconds when no data arrived

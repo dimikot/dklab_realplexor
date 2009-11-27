@@ -101,6 +101,7 @@ $| = 1;
 
 # Turn on zombie auto-reaper.
 $SIG{CHLD} = 'IGNORE';
+$SIG{PIPE} = sub { Realplexor::Common::logger("SIGPIPE received"); return 0; };
 
 # Handle all signals to call END{} block at the end.
 use sigtrap qw(die untrapped normal-signals);

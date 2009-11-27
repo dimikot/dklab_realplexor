@@ -151,7 +151,7 @@ function disconnect_in()
 	expect('/IN.*closed/');
 }
 
-function send_wait($data)
+function send_wait($data, $nowait = false)
 {
 	global $WAIT_SOCK;
 	$data = trim(preg_replace('/^[ \t]+/m', '', $data));
@@ -159,7 +159,7 @@ function send_wait($data)
 	$WAIT_SOCK = fsockopen("127.0.0.1", 8088);
 	fwrite($WAIT_SOCK, "$data\n");
 	fflush($WAIT_SOCK);
-	expect('/WAIT.*registering|WAIT.*marker received/');
+	if (!$nowait) expect('/WAIT.*registering|WAIT.*marker received/');
 }
 
 function recv_wait()

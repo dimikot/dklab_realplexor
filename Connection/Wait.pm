@@ -37,6 +37,8 @@ sub onread {
 	#print "----------\n" . $self->{data} . "\n---------------\n";
 	my $pairs = Realplexor::Common::extract_pairs($self->{data});
 	if (defined $pairs) {
+		die "Empty identifier passed\n" if !@$pairs;
+
 		# Check if we have special marker: IFRAME.
 		if ($pairs->[0][1] eq $CONFIG{IFRAME_ID}) {
 			$self->debug("IFRAME marker received, sending content");

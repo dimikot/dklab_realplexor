@@ -38,7 +38,8 @@ $(document).ready(function() {
 		n[0].callback = function(result, id, cursor) {
 			var b = $('.board_body', n);
 			var line = document.createElement("div");
-			line.innerHTML = (++num) + ": " + result;
+			line.innerHTML = (++num) + ": " + 
+				result.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 			b.prepend(line);
 		}
 		realplexor.subscribe(id, n[0].callback);

@@ -1,0 +1,29 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: success requests series
+</div>
+
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		substituteResponse([]);
+		var callback = function(r, id) {};
+		realplexor.subscribe('AAA', callback);
+		realplexor.subscribe('AAA', function(r, id) {});
+		JsTest.write("Callbacks after subscribe: " + realplexor._map.AAA.callbacks.length + "\n");
+		realplexor.unsubscribe('AAA', callback);
+		JsTest.write("Callbacks after single unsubscribe: " + realplexor._map.AAA.callbacks.length + "\n");
+		realplexor.unsubscribe('AAA', null);
+		JsTest.write("Callbacks after full unsubscribe: " + realplexor._map.AAA.callbacks.length + "\n");
+		setTimeout(function() { JsTest.analyze() }, 700);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+Callbacks after subscribe: 2 
+Callbacks after single unsubscribe: 1 
+Callbacks after full unsubscribe: 0 
+</pre>

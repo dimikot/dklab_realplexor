@@ -3,7 +3,7 @@
 function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 {
 	// Current JS library version.
-	var VERSION = "1.20";
+	var VERSION = "1.21";
 
 	// Detect current page hostname.
 	var host = document.location.host;
@@ -94,6 +94,10 @@ Dklab_Realplexor.prototype.subscribe = function(id, callback) {
 // to stop calling of this callback.
 Dklab_Realplexor.prototype.unsubscribe = function(id, callback) {
 	if (!this._map[id]) return;
+	if (callback == null) {
+		this._map[id].callbacks = [];
+		return;
+	}
 	var chain = this._map[id].callbacks;
 	for (var i = 0; i < chain.length; i++) {
 		if (chain[i] === callback) {

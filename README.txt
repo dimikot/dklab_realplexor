@@ -1,5 +1,6 @@
-Dklab Realplexor v1.20: Comet server which handles 1000000+ parallel browser connections.
-(C) dkLab, http://dklab.ru/lib/dklab_realplexor/
+Dklab Realplexor v1.21: Comet server which handles 1000000+ parallel browser connections.
+Author: Dmitry Koterov, dkLab (C)
+Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
 
 
@@ -93,9 +94,10 @@ events
 CHANGELOG
 ---------
 
-* Dklab Realplexor 2009-12-22: v1.20
+* Dklab Realplexor 2009-12-22: v1.21
   - [NEW] ID queue is cleaned after CLEAN_ID_AFTER seconds when no data arrived
     (previously OFFLINE_TIMEOUT was used for that).
+  - [NEW] To unsubscribe all callbacks from a channel: rpl.unsubscribe("channel", null).
 
 * Dklab Realplexor 2009-12-16: v1.15
   - [NEW] When IDs list is long, JS API uses POST request instead of GET.

@@ -184,8 +184,8 @@ sub send_pendings {
 		# Join response blocks into one "multipart".
 		my $out = "[\n" . join(",\n", @out) . "\n]";
 		my $fh = $fh_by_fh{$fh};
-		my $r1 = print $fh $out;
-		my $r2 = shutdown_fh($fh);
+		my $r1 = print $fh $out;   $r1 = "undef" if !defined $r1;
+		my $r2 = shutdown_fh($fh); $r2 = "undef" if !defined $r2;
 		logger("<- sending " . @out . " responses (" . length($out) . " bytes) from [" . join(", ", @seen_ids) . "] (print=$r1, shutdown=$r2)");
 	}
 	# Remove old data.

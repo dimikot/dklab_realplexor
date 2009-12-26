@@ -1,4 +1,4 @@
-Dklab Realplexor v1.22: Comet server which handles 1000000+ parallel browser connections.
+Dklab Realplexor v1.23: Comet server which handles 1000000+ parallel browser connections.
 Author: Dmitry Koterov, dkLab (C)
 Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
@@ -94,7 +94,7 @@ events
 CHANGELOG
 ---------
 
-* Dklab Realplexor 2009-12-24: v1.23
+* Dklab Realplexor 2009-12-26: v1.23
   - [BUG] Empty identifier passed to IN line ("identifier=") caused warnings.
   - [SPD] Lower the number of useless debug lines and connection's name() calls.
   - [BUG] Improved init script: more time to restart and better signal handling.

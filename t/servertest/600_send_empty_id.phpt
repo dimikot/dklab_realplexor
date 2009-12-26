@@ -7,6 +7,7 @@ $VERBOSE = 1;
 require dirname(__FILE__) . '/init.php';
 
 send_wait("identifier=", true);
+expect("/connection closed/");
 
 ?>
 --EXPECT--

@@ -32,8 +32,8 @@ IN <== "aaa"
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 # IN: DEBUG: parsed IDs; login is "user"
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
-# IN: DEBUG: adding data for [user_abc]
-#   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
+# IN: DEBUG: added data for [user_abc]
+#   [pairs_by_fhs=0 data_to_send=1 connected_fhs=0 online_timers=0 cleanup_timers=1 events=*]
 # IN: DEBUG: connection closed
 #   [pairs_by_fhs=0 data_to_send=1 connected_fhs=0 online_timers=0 cleanup_timers=1 events=*]
 IN ==>

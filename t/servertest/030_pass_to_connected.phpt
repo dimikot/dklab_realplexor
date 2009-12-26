@@ -33,8 +33,8 @@ WA <-- identifier=abc
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 # WAIT: DEBUG: read <N> bytes
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
-# WAIT: DEBUG: [*:abc] registering [abc]
-#   [pairs_by_fhs=1 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
+# WAIT: DEBUG: [*:abc] registered
+#   [pairs_by_fhs=1 data_to_send=0 connected_fhs=1 online_timers=1 cleanup_timers=0 events=*]
 IN <== X-Realplexor: identifier=abc
 IN <== 
 IN <== "aaa"
@@ -44,8 +44,8 @@ IN <== "aaa"
 #   [pairs_by_fhs=1 data_to_send=0 connected_fhs=1 online_timers=1 cleanup_timers=0 events=*]
 # IN: DEBUG: parsed IDs
 #   [pairs_by_fhs=1 data_to_send=0 connected_fhs=1 online_timers=1 cleanup_timers=0 events=*]
-# IN: DEBUG: adding data for [abc]
-#   [pairs_by_fhs=1 data_to_send=0 connected_fhs=1 online_timers=1 cleanup_timers=0 events=*]
+# IN: DEBUG: added data for [abc]
+#   [pairs_by_fhs=1 data_to_send=1 connected_fhs=1 online_timers=1 cleanup_timers=1 events=*]
 # <- sending 1 responses (<N> bytes) from [abc] (print=1, shutdown=1)
 #   [pairs_by_fhs=0 data_to_send=1 connected_fhs=0 online_timers=1 cleanup_timers=1 events=*]
 # IN: DEBUG: connection closed

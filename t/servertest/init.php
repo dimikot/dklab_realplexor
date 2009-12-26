@@ -159,7 +159,7 @@ function send_wait($data, $nowait = false)
 	$WAIT_SOCK = fsockopen("127.0.0.1", 8088);
 	fwrite($WAIT_SOCK, "$data\n");
 	fflush($WAIT_SOCK);
-	if (!$nowait) expect('/WAIT.*registering|WAIT.*marker received/');
+	if (!$nowait) expect('/WAIT.*registered|WAIT.*marker received/');
 }
 
 function recv_wait()

@@ -149,7 +149,6 @@ sub try_process_pairs {
 			}
 			# Add data to queue and set lifetime.
 			push @ids_to_process, $id;
-			$self->debug("adding data for [$id]");
 			$data_to_send->add_dataref_to_id($id, $cursor, \$data, $self->{limit_ids});
 			my $timeout = $CONFIG{CLEAN_ID_AFTER};
 			$cleanup_timers->start_timer_for_id($id, $timeout, sub {
@@ -157,6 +156,8 @@ sub try_process_pairs {
 				Realplexor::Common::logger("[$id] cleaned, because no data is pushed within last $timeout seconds");
 			});
 		}
+		# One debug message per connection.
+		$self->debug("added data for [" . join(",", @ids_to_process). "]") if @ids_to_process;
 		# Send pending data.
 		Realplexor::Common::send_pendings(\@ids_to_process);
 	}

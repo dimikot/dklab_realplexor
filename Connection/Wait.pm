@@ -72,7 +72,6 @@ sub onread {
 		$pairs_by_fhs->set_pairs_for_fh($self->fh, $pairs);
 		foreach my $pair (@$pairs) {
 			my ($cursor, $id) = @$pair;
-			$self->debug("registering [$id]");
 			$connected_fhs->add_to_id($id, $cursor, $self->fh);
 			# Create new online timer, but do not start it - it is 
 			# started at LAST connection close, later.
@@ -85,6 +84,7 @@ sub onread {
 				$events->notify("online", $id);
 			}
 		}
+		$self->debug("registered"); # ids are already in the debug line prefix
 		# Try to send pendings.
 		Realplexor::Common::send_pendings([map { $_->[1] } @$pairs]);
 		return;
@@ -124,8 +124,12 @@ sub onclose {
 
 # Connection name is its ID.
 sub name {
-	my ($self) = @_;
-	return $self->{pairs}? join(',', map { $_->[0] . ":" . $_->[1] } @{$self->{pairs}}) : undef;
+	my $pairs = $_[0]->{pairs};
+	return $_[0]->{name} ||= (
+		$pairs && @$pairs
+		? ($pairs->[0][0] . ":" . $pairs->[0][1]) . (@$pairs > 1? ",(and " . (@$pairs - 1) . " more)" : "")
+		: undef
+	);
 }
 
 return 1;

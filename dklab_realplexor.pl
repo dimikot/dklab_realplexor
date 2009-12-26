@@ -63,7 +63,8 @@ sub mainloop {
 		logger => \&Realplexor::Common::logger,
 	);
 
-	use POSIX 'SIGHUP';
+	# Catch signals.
+	use POSIX qw(SIGHUP SIGINT);
 	Event::Lib::Server::signal(SIGHUP, sub {
 		Realplexor::Common::logger("SIGHUP received, reloading the config");
 		my $low_level_opt = Realplexor::Config::reload($additional_conf);
@@ -72,6 +73,10 @@ sub mainloop {
 			exit();
 		}
 		return;
+	});
+	Event::Lib::Server::signal(SIGINT, sub {
+		Realplexor::Common::logger("SIGINT received, exiting");
+		exit();
 	});
 	
 	# If running as root, SU to safe user.
@@ -152,8 +157,14 @@ while (1) {
 # Called if process dies.
 END {
 	return if !$pid; # children
-	kill 9, $pid;
-	print STDERR "Terminated.\n";
+	kill(2, $pid);
+	sleep(1);
+	if (kill(0, $pid)) {
+		kill(9, $pid);
+		print STDERR "Killed the child using a heavy SIGKILL.\n";
+	} else {
+		print STDERR "Normally terminated.\n";
+	}
 	if ($pid_file) {
 		unlink($pid_file);
 	}

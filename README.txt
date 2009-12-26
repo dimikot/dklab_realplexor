@@ -97,6 +97,7 @@ CHANGELOG
 * Dklab Realplexor 2009-12-24: v1.23
   - [BUG] Empty identifier passed to IN line ("identifier=") caused warnings.
   - [SPD] Lower the number of useless debug lines and connection's name() calls.
+  - [BUG] Improved init script: more time to restart and better signal handling.
 
 * Dklab Realplexor 2009-12-24: v1.22
   - [BUG] SIGPIPE causes the script to restart on some unexpected client's disconnects.

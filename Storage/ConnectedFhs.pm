@@ -29,8 +29,8 @@ sub del_from_id_by_fh {
 }
 
 sub get_hash_by_id {
-	my ($this, $id) = @_;
-	return $this->{$id};
+#	my ($this, $id) = @_;
+	return $_[0]->{$_[1]};
 }
 
 sub get_num_items {

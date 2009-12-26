@@ -28,8 +28,8 @@ sub remove_by_fh {
 }
 
 sub get_pairs_by_fh {
-	my ($this, $fh) = @_;
-	return @{$this->{$fh}};
+#	my ($this, $fh) = @_;
+	return $_[0]->{$_[1]};
 }
 
 sub get_num_items {

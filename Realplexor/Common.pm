@@ -83,7 +83,7 @@ sub extract_pairs {
 sub shutdown_fh {
 	my ($fh) = @_;
 	# Remove all references to $fh from everywhere.
-	foreach my $pair ($pairs_by_fhs->get_pairs_by_fh($fh)) {
+	foreach my $pair (@{$pairs_by_fhs->get_pairs_by_fh($fh)}) {
 		$connected_fhs->del_from_id_by_fh($pair->[1], $fh);
 	}
 	$pairs_by_fhs->remove_by_fh($fh);
@@ -117,7 +117,7 @@ sub send_pendings {
 			# Process a single FH which listens this ID at $cursor.
 			my ($listen_cursor, $fh) = @$cursor_and_fh;
 			# What other IDs listens this FH.
-			my $what_listens_this_fh = [ $pairs_by_fhs->get_pairs_by_fh($fh) ];
+			my $what_listens_this_fh = $pairs_by_fhs->get_pairs_by_fh($fh);
 			$fh_by_fh{$fh} = $fh;
 			# Iterate over data items.
 			ONE_ITEM:

@@ -36,8 +36,8 @@ sub add_dataref_to_id {
 }
 
 sub get_data_by_id {
-	my ($this, $id) = @_;
-	return $this->{$id};
+#	my ($this, $id) = @_;
+	return $_[0]->{$_[1]};
 }
 
 sub get_num_items {

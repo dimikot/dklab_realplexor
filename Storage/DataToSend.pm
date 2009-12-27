@@ -17,6 +17,7 @@
 package Storage::DataToSend;
 use base 'Exporter';
 use strict;
+use Tie::Array::Sorted;
 our @EXPORT = qw($data_to_send);
 our $data_to_send = new Storage::DataToSend();
 
@@ -32,7 +33,14 @@ sub clear_id {
 
 sub add_dataref_to_id {
 	my ($this, $id, $cursor, $rdata, $rlimit_ids) = @_;
-	push @{$this->{$id}}, [$cursor, $rdata, $rlimit_ids];
+	my $list = $this->{$id};
+	if (!$list) {
+		$list = $this->{$id} = [];
+		tie @$list, "Tie::Array::Sorted", sub { $_[1][0] <=> $_[0][0] };
+	}
+	# TODO: in most cases new cursor is greater than the first array
+	# element, so we may unshif it without re-sorting to speedup.
+	push @$list, [$cursor, $rdata, $rlimit_ids];
 }
 
 sub get_data_by_id {

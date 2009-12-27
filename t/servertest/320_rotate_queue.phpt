@@ -35,8 +35,8 @@ IN ==> Content-Type: text/plain
 IN ==> Content-Length: 259
 IN ==> 
 IN ==> [data_to_send]
-IN ==> abc => [*: 3b], [*: 4b]
-IN ==> def => [*: 3b], [*: 4b]
+IN ==> abc => [*: 4b], [*: 3b]
+IN ==> def => [*: 4b], [*: 3b]
 IN ==> 
 IN ==> [connected_fhs]
 IN ==> 
@@ -57,8 +57,8 @@ IN ==> Content-Type: text/plain
 IN ==> Content-Length: 259
 IN ==> 
 IN ==> [data_to_send]
-IN ==> abc => [*: 4b], [*: 5b]
-IN ==> def => [*: 4b], [*: 5b]
+IN ==> abc => [*: 5b], [*: 4b]
+IN ==> def => [*: 5b], [*: 4b]
 IN ==> 
 IN ==> [connected_fhs]
 IN ==> 

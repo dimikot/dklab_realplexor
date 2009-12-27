@@ -132,18 +132,21 @@ sub send_pendings {
 			# Iterate over data items.
 			ONE_ITEM:
 			foreach my $item (@$data) {
+				# If we found an element with smaller cursor, abort iteration,
+				# because all elements are sorted by cursor.
+				last if $item->[0] <= $listen_cursor;
 				# Process a single data item in context of this FH.
 				my ($cursor, $rdata, $limit_ids) = @$item;
 				# Filter data invisible to this client.
 				foreach my $func (@visibility_checkers) {
-					next ONE_ITEM if !$func->(
+					next ONE_ITEM if !$func->({
 						id           => $id,
 						cursor        => $cursor,
 						rdata        => $rdata,
 						limit_ids    => $limit_ids,
 						listen_cursor => $listen_cursor,
 						listen_pairs => $what_listens_this_fh,
-					);
+					});
 				}
 				# Hash by dataref to avoid to send the same data 
 				# twice if it is appeared in multiple IDs.
@@ -213,15 +216,12 @@ sub _do_send {
 
 # Called to check visibility of a data block.
 sub hook_check_visibility {
-	my (%a) = @_;
+	my ($a) = @_;
 	
-	# 1. Filter old data.
-	return 0 if $a{cursor} <= $a{listen_cursor};
-		
-	# 2. If this data block has limited visibility, check that
-	#    current client listens at least one ID in the associated
-	#    limiter list.
-	return 0 if $a{limit_ids} && !grep { $a{limit_ids}{$_->[1]} } @{$a{listen_pairs}};
+	# If this data block has limited visibility, check that
+	# current client listens at least one ID in the associated
+	# limiter list.
+	return 0 if $a->{limit_ids} && !grep { $a->{limit_ids}{$_->[1]} } @{$a->{listen_pairs}};
 				
 	# OK.
 	return 1;

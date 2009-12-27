@@ -135,7 +135,7 @@ function recv_in($numLines = null)
 	$ret = join("", $lines);
 	$ret = trim($ret);
 	$ret = preg_replace('/\(0x\w+\)/', '(0x*)', $ret);
-	$ret = preg_replace('/\d+\.\d+:/s', '*:', $ret);
+	$ret = preg_replace('/(online |offline |FAKE |=> |\[)[\d.]+:/s', '$1*:', $ret);
 	echo preg_replace('/^/m', 'IN ==> ', $ret) . "\n";
 	if (feof($IN_SOCK)) {
 		fclose($IN_SOCK);

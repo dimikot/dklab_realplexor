@@ -22,7 +22,7 @@ send_wait("
 ");
 disconnect_wait();
 
-$events = $mpl->cmdWatch(0, array("demo_"));
+$events = $mpl->cmdWatch(1, array("demo_"));
 foreach ($events as $i => $e) {
 	$events[$i]['pos'] = "*";
 }

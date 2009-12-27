@@ -18,6 +18,7 @@ sub new {
 	my ($class) = @_;
 	my $self = bless {}, $class;
 	$self->{chains} = [];
+	$self->{cur_pos} = 10;
 	push @{$self->{chains}}, [];
 	return $self;
 }
@@ -37,15 +38,17 @@ sub notify {
 		shift @{$self->{chains}};
 	}
 	# Add item.
-	push @$chain, [ Realplexor::Tools::time_hi_res(), $event, $id ];
+	push @$chain, [ $self->{cur_pos}++, $event, $id ];
 }
 
-# Return events never than $from_cursor.
+# Return events newer than $from_cursor.
 # Format: [ [ time, type, id ], ... ]
 sub get_recent_events {
 	my ($self, $from_cursor, $idRe) = @_;
-	$from_cursor = 0 if $from_cursor !~ /^[\d.]+$/s;
-	$from_cursor = new Math::BigFloat($from_cursor);
+	# Initial request. Return fake event with its cursor.
+	if (!$from_cursor || $from_cursor !~ /^[\d.]+$/s) {
+		return [ [ $self->{cur_pos}, "FAKE", "FAKE" ] ];
+	}
 	my @events = ();
 	my %seen = ();
 	OUTER:

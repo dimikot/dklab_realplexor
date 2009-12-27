@@ -12,9 +12,20 @@ use Storage::DataToSend;
 use Realplexor::Config;
 use Storage::Events;
 
+my $profiler_started = 0;
+
 # Called on a new connection.
 sub new {
 	my ($class, @args) = @_;
+	
+	# Start profiler only at a first WAIT connection.
+	if (!$profiler_started && $ENV{NYTPROF}) {
+		if ($ENV{NYTPROF} =~ /\bfile=([^:]+)/s) {
+			DB::enable_profile("$1.real");
+		}
+	}
+	$profiler_started = 1;
+	
 	my $self = $class->SUPER::new(@args);
 	$self->{pairs} = undef;
 	$self->{data} = "";

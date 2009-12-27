@@ -81,7 +81,7 @@ WA :: Disconnecting.
 IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
-IN ==> Content-Length: 468
+IN ==> Content-Length: 192
 IN ==> 
 IN ==> online *:abc08
 IN ==> online *:abc09

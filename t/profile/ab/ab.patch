@@ -1,0 +1,81 @@
+--- httpd-2.2.14/support/ab.c	2009-09-14 23:43:02.000000000 +0400
++++ httpd-2.2.14-patched/support/ab.c	2009-12-27 13:25:28.000000000 +0300
+@@ -270,4 +270,5 @@
+ int posting = 0;        /* GET by default */
+ int requests = 1;       /* Number of requests to make */
++int rotations = 0;      /* How much unique values to insert instead of "{*}" in URL. */
+ int heartbeatres = 100; /* How often do we say we're alive */
+ int concurrency = 1;    /* Number of multiple requests to make */
+@@ -623,4 +624,30 @@
+ static void write_request(struct connection * c)
+ {
++    char *marker = "{*}";
++    int marklen = strlen(marker);
++    char *new_request = request; 
++    int new_reqlen = reqlen;
++    char new_request_buf[8192];
++    static int rot = 0;
++    char srot[16];
++    
++    if (rotations) {
++        char *from = request, *to = new_request_buf;
++        while (*from) {
++            if (*from == marker[0] && 0 == strncmp(from, marker, marklen)) {
++                sprintf(srot, "%.10d", rot);
++                rot = (rot + 1) % rotations;
++                strncpy(to, srot, strlen(srot));
++                to += strlen(srot);
++                from += marklen;
++            } else {
++                *to++ = *from++;
++            }
++        }
++        *to = 0;
++        new_request = new_request_buf;
++        new_reqlen = strlen(new_request);
++    }
++    
+     do {
+         apr_time_t tnow;
+@@ -637,5 +664,5 @@
+             c->connect = tnow;
+             c->rwrote = 0;
+-            c->rwrite = reqlen;
++            c->rwrite = new_reqlen;
+             if (posting)
+                 c->rwrite += postlen;
+@@ -650,5 +677,5 @@
+         if (c->ssl) {
+             apr_size_t e_ssl;
+-            e_ssl = SSL_write(c->ssl,request + c->rwrote, l);
++            e_ssl = SSL_write(c->ssl,new_request + c->rwrote, l);
+             if (e_ssl != l) {
+                 BIO_printf(bio_err, "SSL write failed - closing connection\n");
+@@ -662,5 +689,5 @@
+         else
+ #endif
+-            e = apr_socket_send(c->aprsock, request + c->rwrote, &l);
++            e = apr_socket_send(c->aprsock, new_request + c->rwrote, &l);
+ 
+         if (e != APR_SUCCESS && !APR_STATUS_IS_EAGAIN(e)) {
+@@ -1835,4 +1862,5 @@
+  */
+     fprintf(stderr, "Options are:\n");
++    fprintf(stderr, "    -R rotation     Number of different values to be inserted instead of \"{*}\" in URL\n");
+     fprintf(stderr, "    -n requests     Number of requests to perform\n");
+     fprintf(stderr, "    -c concurrency  Number of multiple requests to make\n");
+@@ -2032,5 +2060,5 @@
+ 
+     apr_getopt_init(&opt, cntxt, argc, argv);
+-    while ((status = apr_getopt(opt, "n:c:t:b:T:p:u:v:rkVhwix:y:z:C:H:P:A:g:X:de:Sq"
++    while ((status = apr_getopt(opt, "R:n:c:t:b:T:p:u:v:rkVhwix:y:z:C:H:P:A:g:X:de:Sq"
+ #ifdef USE_SSL
+             "Z:f:"
+@@ -2038,4 +2066,7 @@
+             ,&c, &optarg)) == APR_SUCCESS) {
+         switch (c) {
++            case 'R':
++                rotations = atoi(optarg);
++                break;
+             case 'n':
+                 requests = atoi(optarg);

@@ -31,7 +31,7 @@ WA <-- aaa
 IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
-IN ==> Content-Length: 37
+IN ==> Content-Length: 14
 IN ==> 
 IN ==> online *:abc
 WA :: Disconnecting.
@@ -40,7 +40,7 @@ WA <-- aaa
 IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
-IN ==> Content-Length: 74
+IN ==> Content-Length: 28
 IN ==> 
 IN ==> online *:abc
 IN ==> online *:def
@@ -48,7 +48,7 @@ WA :: Disconnecting.
 IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
-IN ==> Content-Length: 76
+IN ==> Content-Length: 30
 IN ==> 
 IN ==> offline *:abc
 IN ==> offline *:def

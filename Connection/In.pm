@@ -219,7 +219,7 @@ sub cmd_watch {
 	my ($self, $arg) = @_;
 	$arg = "" if !defined $arg;
 	my ($cursor, $id_prefixes) = split /\s+/, $arg, 2;
-	$cursor = Realplexor::Tools::time_hi_res() if !defined $cursor || !length $cursor;
+	$cursor = "" if !defined $cursor || !length $cursor;
 	$id_prefixes = "" if !defined $id_prefixes || !length $id_prefixes;
 	my $list = $events->get_recent_events($cursor, $self->_id_prefixes_to_re($id_prefixes));
 	$self->debug("sending " . @$list . " events");

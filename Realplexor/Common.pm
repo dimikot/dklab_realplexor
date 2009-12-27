@@ -62,8 +62,6 @@ sub extract_pairs {
 # Split a comma-separated list of IDs.
 sub _split_ids {
 	# By default, current HiRes time is returned as a cursor.
-	# It's very important that time_hi_res() returns Math::BigFloat, because
-	# system timer resolution is not enough to differ sequential calls.
 	my $from_in_line = $_[1];
 	my $time = undef; # delayed calculation
 	my %limit_ids = ();
@@ -76,7 +74,7 @@ sub _split_ids {
 			if (!$1 || !$from_in_line) {
 				# Not limiter or limiter, but in WAIT line.
 				defined $2 && length($2) 
-					? [ $2, $3 ] 
+					? [ $2, $3 ] # with cursor
 					: [ 
 						($time ||= Realplexor::Tools::time_hi_res()), 
 						$3 

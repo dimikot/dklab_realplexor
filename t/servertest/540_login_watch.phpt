@@ -12,9 +12,9 @@ send_wait("
 ");
 disconnect_wait();
 
-echo "Must be empty:\n";
+echo "Must be FAKE:\n";
 send_in(null, "identifier=user:password@\n\n" . "watch");
-echo "Must be empty:\n";
+echo "Must be FAKE:\n";
 send_in(null, "identifier=user:password@\n\n" . "watch 1 u");
 echo "Must be not empty:\n";
 send_in(null, "identifier=user:password@\n\n" . "watch 1 user_");
@@ -24,14 +24,16 @@ send_in(null, "identifier=user:password@\n\n" . "watch 1 user_");
 WA <-- identifier=10:user_abc
 WA <-- aaa
 WA :: Disconnecting.
-Must be empty:
+Must be FAKE:
 IN <== identifier=user:password@
 IN <== 
 IN <== watch
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
-IN ==> Content-Length: 0
-Must be empty:
+IN ==> Content-Length: 13
+IN ==> 
+IN ==> FAKE *:FAKE
+Must be FAKE:
 IN <== identifier=user:password@
 IN <== 
 IN <== watch 1 u
@@ -44,7 +46,7 @@ IN <==
 IN <== watch 1 user_
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
-IN ==> Content-Length: 42
+IN ==> Content-Length: 19
 IN ==> 
 IN ==> online *:user_abc
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=1 cleanup_timers=0 events=*]

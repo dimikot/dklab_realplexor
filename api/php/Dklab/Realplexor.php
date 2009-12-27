@@ -138,7 +138,7 @@ class Dklab_Realplexor
 			$fromPos = 0;
 		}
 		if (!preg_match('/^[\d.]+$/', $fromPos)) {
-			throw new Dklab_Realplexor_Exception("Position value must be float, \"$fromPos\" given");
+			throw new Dklab_Realplexor_Exception("Position value must be numeric, \"$fromPos\" given");
 		}
 		// Add namespaces.
 		if (strlen($this->_namespace)) {
@@ -160,7 +160,7 @@ class Dklab_Realplexor
 			}
 			list ($event, $pos, $id) = array($m[1], $m[2], $m[3]);
 			// Cut off namespace.
-			if (strlen($this->_namespace) && strpos($id, $this->_namespace) === 0) {
+			if ($fromPos && strlen($this->_namespace) && strpos($id, $this->_namespace) === 0) {
 				$id = substr($id, strlen($this->_namespace));
 			}
 			$events[] = array(

@@ -29,7 +29,7 @@ sub time_hi_res {
 # Rerun the script unlimited.
 sub rerun_unlimited {
 	if (($ARGV[0]||'') ne "-") {
-		my $cmd = "/bin/sh -c 'ulimit -n 1048576; $^X \"$0\" - " . join(" ", map { '"' . $_ . '"' } @ARGV) . "'";
+		my $cmd = "/bin/sh -c 'ulimit -n 1048576; exec \"$^X\" \"$0\" - " . join(" ", map { '"' . $_ . '"' } @ARGV) . "'";
 		exec($cmd) or die "Cannot exec $cmd: $!\n";
 	} else {
 		shift @ARGV;

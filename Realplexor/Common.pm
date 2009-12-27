@@ -254,8 +254,12 @@ sub logger {
 		$online_timers->get_num_items(),
 		$cleanup_timers->get_num_items(),
 		$events->get_num_items()
-	) if !$nostat && $verb > 1;
-	print "[" . localtime(time) . "] $msg\n";
+	) if !$nostat && $verb > 2;
+	if ($verb == 2) {
+		print "[" . localtime(time) . "] $msg\n";
+	} else {
+		print $msg . "\n";
+	}
 }
 
 return 1;

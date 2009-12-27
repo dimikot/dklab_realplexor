@@ -3,6 +3,8 @@ use lib '../..';
 use Realplexor::Tools;
 use IO::Socket;
 use Getopt::Long;
+use Cwd 'abs_path';
+use File::Basename;
 Realplexor::Tools::rerun_unlimited();
 
 # Read arguments.
@@ -37,6 +39,8 @@ mkdir $dir;
 chmod(0777, $dir);
 
 # Fork our realplexor daemon.
+
+my $cwd = dirname(abs_path(__FILE__));
 chdir("../..");
 if (!fork()) {
 	open(STDOUT, ">", $log);
@@ -45,7 +49,7 @@ if (!fork()) {
 		$ENV{PERL5OPT} = '-d:NYTProf';
 		$ENV{NYTPROF} = "sigexit=int,hup:start=no:addpid=1:file=$dir/nytprof.out";
 	}
-	exec "perl dklab_realplexor.pl -p $dir/dklab_realplexor.pid";
+	exec "perl dklab_realplexor.pl $cwd/dklab_realplexor.conf -p $dir/dklab_realplexor.pid";
 }
 sleep 1;
 

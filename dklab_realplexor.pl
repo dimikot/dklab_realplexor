@@ -45,6 +45,9 @@ sub mainloop {
 	# Load configs.
 	my $additional_conf = $ARGV[0];
 	Realplexor::Config::load($additional_conf);
+	
+	# Turn on STDOUT buffering in non-verbose mode.
+	$| = 0 if $CONFIG{VERBOSITY} < 3;
 
 	# Initialize servers.
 	my $wait = Event::Lib::Server->new(

@@ -18,6 +18,7 @@ my $time_counter = 0;
 sub time_hi_res {
 	my $time = new Math::BigFloat(Time::HiRes::time());
 	$time->precision(-14); # number of digits after "."
+#	my $time = Time::HiRes::time();  # Using double instead of BigFloat increases performance a little: 256 -> 282 rps
 	my $cycle = 1000;
 	$time_counter++;
 	$time_counter = 0 if $time_counter > $cycle;

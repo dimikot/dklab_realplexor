@@ -101,7 +101,8 @@ Realplexor::Tools::rerun_unlimited();
 use FindBin qw($Bin);
 chdir($Bin);
 
-# Turn off buffering.
+# Turn off buffering in debug log. (Load test says that there is 
+# no difference in performance if bufferring is turned off or not.)
 $| = 1;
 
 # Turn on zombie auto-reaper.

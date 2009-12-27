@@ -51,14 +51,21 @@ sub extract_pairs {
 		$CONFIG{IDENTIFIER} =
 		(?: (\w+) : ([^@\s]+) @ )?
 		([*\w,.:]*)
-		# At the end, find a character, NOT end of string! 
+		# At the end, find a character, NOT the end of the string! 
 		# Because only a chunk may finish, not the whole data.
-		[^*\w,.:] 
+		[^*\w,.:]
 	}sx or return undef;
-	# By default, current HiRes time is returned for cursor.
+	my ($pairs, $limit_ids) = _split_ids($ids, $from_in_line);
+	return wantarray()? ($pairs, (%$limit_ids? $limit_ids : undef), ($login? [$login, $password] : undef)) : $pairs;
+}
+
+# Split a comma-separated list of IDs.
+sub _split_ids {
+	# By default, current HiRes time is returned as a cursor.
 	# It's very important that time_hi_res() returns Math::BigFloat, because
 	# system timer resolution is not enough to differ sequential calls.
-	my $time = Realplexor::Tools::time_hi_res();
+	my $from_in_line = $_[1];
+	my $time = undef; # delayed calculation
 	my %limit_ids = ();
 	my @pairs = map {
 		if (m/^ (\*?) (?: (\d+(?:\.\d+)?) : )? (\w+) $/sx) {
@@ -68,19 +75,24 @@ sub extract_pairs {
 			}
 			if (!$1 || !$from_in_line) {
 				# Not limiter or limiter, but in WAIT line.
-				defined $2 && length($2) ? [ $2, $3 ] : [ $time, $3 ];
+				defined $2 && length($2) 
+					? [ $2, $3 ] 
+					: [ 
+						($time ||= Realplexor::Tools::time_hi_res()), 
+						$3 
+					];
 			} else {
 				();
 			}
 		} else {
 			();
 		}
-	} split(/,/, $ids);
-	return wantarray()? (\@pairs, (%limit_ids? \%limit_ids : undef), ($login? [$login, $password] : undef)) : \@pairs;
+	} split(/,/, $_[0]);
+	return (\@pairs, \%limit_ids);
 }
 
 # Shutdown a connection and remove all references to it.
-sub shutdown_fh {
+sub _shutdown_fh {
 	my ($fh) = @_;
 	# Remove all references to $fh from everywhere.
 	foreach my $pair (@{$pairs_by_fhs->get_pairs_by_fh($fh)}) {
@@ -152,23 +164,34 @@ sub send_pendings {
 		}
 	}
 	
-	# Send data to each connection (json array format).
-	# Response format is:
-	# [
-	#   {
-	#     "ids": { "id1": cursor1, "id2": cursor2, ... },
-	#     "data": <data from server without headers>
-	#   },
-	#   {
-	#     "ids": { "id3": cursor3, "id4": cursor4, ... },
-	#     "data": <data from server without headers>
-	#   },
-	#   ...
-	# }
-	my @seen_ids = sort keys %seen_ids;
-	while (my ($fh, $triples) = each %data_by_fh) {
+	# Perform sending operation.
+	_do_send(\%data_by_fh, \%seen_ids, \%fh_by_fh);
+	
+	# Remove old data.
+	foreach my $id (@$ids) {
+		$data_to_send->clean_old_data_for_id($id, $CONFIG{MAX_DATA_FOR_ID});
+	}
+}
+
+# Send data to each connection (json array format).
+# Response format is:
+# [
+#   {
+#     "ids": { "id1": cursor1, "id2": cursor2, ... },
+#     "data": <data from server without headers>
+#   },
+#   {
+#     "ids": { "id3": cursor3, "id4": cursor4, ... },
+#     "data": <data from server without headers>
+#   },
+#   ...
+# }
+sub _do_send {
+	my ($data_by_fh, $seen_ids, $fh_by_fh) = @_;
+	my @seen_ids = sort keys %$seen_ids;
+	while (my ($fh, $triples) = each %$data_by_fh) {
 		my @out = ();
-		# Ordering is for better determinism in tests.
+		# Additional ordering by raw data is for better determinism in tests.
 		foreach my $triple (sort { $a->{cursor} <=> $b->{cursor} or ${$a->{rdata}} cmp ${$b->{rdata}} } values %$triples) {
 			# Build one response block.
 			# It's very to send cursors as string to avoid rounding.
@@ -183,22 +206,16 @@ sub send_pendings {
 		}
 		# Join response blocks into one "multipart".
 		my $out = "[\n" . join(",\n", @out) . "\n]";
-		my $fh = $fh_by_fh{$fh};
+		my $fh = $fh_by_fh->{$fh};
 		my $r1 = print $fh $out;   $r1 = "undef" if !defined $r1;
-		my $r2 = shutdown_fh($fh); $r2 = "undef" if !defined $r2;
+		my $r2 = _shutdown_fh($fh); $r2 = "undef" if !defined $r2;
 		logger("<- sending " . @out . " responses (" . length($out) . " bytes) from [" . join(", ", @seen_ids) . "] (print=$r1, shutdown=$r2)");
-	}
-	# Remove old data.
-	foreach my $id (@$ids) {
-		$data_to_send->clean_old_data_for_id($id, $CONFIG{MAX_DATA_FOR_ID});
 	}
 }
 
 # Called to check visibility of a data block.
 sub hook_check_visibility {
 	my (%a) = @_;
-
-#	use Data::Dumper; print Dumper(\%a);
 	
 	# 1. Filter old data.
 	return 0 if $a{cursor} <= $a{listen_cursor};

@@ -2,7 +2,7 @@
 /**
  * Dklab_Realplexor PHP API.
  *
- * @version 1.02
+ * @version 1.24
  */
 class Dklab_Realplexor
 {

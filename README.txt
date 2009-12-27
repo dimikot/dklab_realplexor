@@ -1,4 +1,4 @@
-Dklab Realplexor v1.23: Comet server which handles 1000000+ parallel browser connections.
+Dklab Realplexor v1.24: Comet server which handles 1000000+ parallel browser connections.
 Author: Dmitry Koterov, dkLab (C)
 Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
@@ -93,6 +93,15 @@ events
 
 CHANGELOG
 ---------
+
+* Dklab Realplexor 2010-01-30: v1.24
+  - [BUG] Avoid warnings in log on unexpected disconnect.
+  - [NEW] Refactoring and profiler support.
+  - [SPD] Do not create extra shell while calling ulimit.
+  - [NEW] Support for per-config log facility.
+  - [SPD] Profiler tool with IN line ignorance. Avoid BigFloat in events: 45% speedup. Apache ab patched utility.
+  - [SPD] Keep channels pre-sorted after addition. It speedups 60%, because we need less cursor comparisions.
+  - [SPD] STDOUT buffering in non-verbose mode. More verbosity levels. Logger speedup. Custom config for profiler script.
 
 * Dklab Realplexor 2009-12-26: v1.23
   - [BUG] Empty identifier passed to IN line ("identifier=") caused warnings.

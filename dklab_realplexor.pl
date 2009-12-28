@@ -4,7 +4,7 @@
 ## connection emulation for JavaScript. Tool to handle 1000000+ 
 ## parallel browser connections.
 ##
-## version 2.00
+## version 2.x
 ## (C) dkLab, http://dklab.ru/lib/dklab_realplexor/
 ## Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
 ##

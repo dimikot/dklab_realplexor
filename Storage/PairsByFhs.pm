@@ -8,7 +8,6 @@
 package Storage::PairsByFhs;
 use base 'Exporter';
 use strict;
-use Event::Lib;
 our @EXPORT = qw($pairs_by_fhs);
 our $pairs_by_fhs = new Storage::PairsByFhs();
 

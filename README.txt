@@ -1,4 +1,4 @@
-Dklab Realplexor v1.24: Comet server which handles 1000000+ parallel browser connections.
+Dklab Realplexor v1.30: Comet server which handles 1000000+ parallel browser connections.
 Author: Dmitry Koterov, dkLab (C)
 Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
@@ -10,16 +10,16 @@ INSTALLATION ON LINUX
 0. First of all, run ./dklab_realplexor.pl manually and check that all
    needed libraries are installed. If not, compile & install them:
    - For RHEL (RedHat, CentOS):
-     # yum install libevent-devel gcc
-     # perl -MCPAN -e "install Event::Lib"
+     # yum install gcc
+     # perl -MCPAN -e "install EV"
    - For Debian (or Ubuntu):
-     # apt-get install libevent-dev gcc
-     # perl -MCPAN -e "install Event::Lib"
+     # apt-get install gcc
+     # perl -MCPAN -e "install EV"
 
 1. Copy Realplexor to /opt/dklab_realplexor (or you may create a symlink).
    # cp -a . /opt/dklab_realplexor
      - or -
-   # ln -s `pws` /opt/dklab_realplexor
+   # ln -s `pwd` /opt/dklab_realplexor
 
 2. Create /etc/dklab_realplexor.conf if you need a custom configuration.
    (You may create a symlink instead of creating the file.)
@@ -93,6 +93,10 @@ events
 
 CHANGELOG
 ---------
+
+* Dklab Realplexor 2010-02-27: v1.30
+  - [SPD] Use EV library (http://search.cpan.org/~mlehmann/EV-3.9/EV.pm)
+    instead of libevent. It is faster and has no memory leaks.
 
 * Dklab Realplexor 2010-01-30: v1.24
   - [BUG] Avoid warnings in log on unexpected disconnect.

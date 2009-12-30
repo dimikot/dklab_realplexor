@@ -11,15 +11,15 @@
 
 use strict;
 BEGIN {
-	if (!eval('use Event::Lib; 1')) { 
-		print STDERR "Error: Event::Lib library is not found in your system.\n";
-		print STDERR "You must install libevent and Event::Lib, e.g.:\n";
-		print STDERR "# yum install libevent-devel gcc\n"; 
-		print STDERR "# perl -MCPAN -e \"install Event::Lib\"\n";
+	if (!eval('use EV; 1')) { 
+		print STDERR "Error: EV library is not found in your system:\n";
+		print STDERR "http://search.cpan.org/~mlehmann/EV-3.9/EV.pm\n";
+		print STDERR "You must install EV, e.g.:\n";
+		print STDERR "# yum install gcc\n"; 
+		print STDERR "# perl -MCPAN -e \"install EV\"\n";
 		print STDERR "  - or -\n"; 
-		print STDERR "# apt-get install libevent-dev gcc\n"; 
-		print STDERR "# perl -MCPAN -e \"install Event::Lib\"\n";
-		print STDERR "(see http://monkey.org/~provos/libevent/ for details)\n";
+		print STDERR "# apt-get install gcc\n"; 
+		print STDERR "# perl -MCPAN -e \"install EV\"\n";
 		exit(1);
 	}
 }
@@ -28,13 +28,14 @@ use Storage::DataToSend;
 use Storage::ConnectedFhs;
 use Storage::OnlineTimers;
 use Storage::PairsByFhs;
-use Event::Lib::Connection;
-use Event::Lib::Server;
+use Realplexor::Event::Connection;
+use Realplexor::Event::Server;
 use Connection::Wait;
 use Connection::In;
 use Realplexor::Config;
 use Realplexor::Common;
 use Getopt::Long;
+use Realplexor::Event::Signal;
 
 
 # Main processing loop.
@@ -50,7 +51,7 @@ sub mainloop {
 	$| = 0 if $CONFIG{VERBOSITY} < 3;
 
 	# Initialize servers.
-	my $wait = Event::Lib::Server->new(
+	my $wait = Realplexor::Event::Server->new(
 		name => "WAIT",
 		listen => $CONFIG{WAIT_ADDR},
 		timeout => $CONFIG{WAIT_TIMEOUT},
@@ -58,7 +59,7 @@ sub mainloop {
 		logger => \&Realplexor::Common::logger,
 	);
 	
-	my $in = Event::Lib::Server->new(
+	my $in = Realplexor::Event::Server->new(
 		name => "IN",
 		listen => $CONFIG{IN_ADDR},
 		timeout => 0, #$CONFIG{IN_TIMEOUT},
@@ -67,8 +68,8 @@ sub mainloop {
 	);
 
 	# Catch signals.
-	use POSIX qw(SIGHUP SIGINT);
-	Event::Lib::Server::signal(SIGHUP, sub {
+	use POSIX qw(SIGHUP SIGINT SIGPIPE);
+	Realplexor::Event::Signal::create(SIGHUP, sub {
 		Realplexor::Common::logger("SIGHUP received, reloading the config");
 		my $low_level_opt = Realplexor::Config::reload($additional_conf);
 		if ($low_level_opt) {
@@ -77,9 +78,13 @@ sub mainloop {
 		}
 		return;
 	});
-	Event::Lib::Server::signal(SIGINT, sub {
+	Realplexor::Event::Signal::create(SIGINT, sub {
 		Realplexor::Common::logger("SIGINT received, exiting");
 		exit();
+	});
+	Realplexor::Event::Signal::create(SIGPIPE, sub {
+		Realplexor::Common::logger("SIGPIPE ignored");
+		return 0;
 	});
 	
 	# If running as root, SU to safe user.
@@ -94,7 +99,7 @@ sub mainloop {
 		}
 	}
 	
-	Event::Lib::Server::mainloop();
+	Realplexor::Event::Server::mainloop();
 }
 
 # Re-run self with high ulimit.
@@ -110,7 +115,6 @@ $| = 1;
 
 # Turn on zombie auto-reaper.
 $SIG{CHLD} = 'IGNORE';
-$SIG{PIPE} = sub { Realplexor::Common::logger("SIGPIPE received"); return 0; };
 
 # Handle all signals to call END{} block at the end.
 use sigtrap qw(die untrapped normal-signals);

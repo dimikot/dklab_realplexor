@@ -6,7 +6,7 @@
 ## represents a separated connection and may hold intermediate
 ## data collected while its connection is processed.
 ##
-package Event::Lib::Connection;
+package Realplexor::Event::Connection;
 use strict;
 
 # Called on new connection.

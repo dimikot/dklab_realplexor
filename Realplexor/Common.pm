@@ -9,8 +9,8 @@ use Storage::OnlineTimers;
 use Storage::PairsByFhs;
 use Storage::CleanupTimers;
 use Storage::Events;
-use Event::Lib::Connection;
-use Event::Lib::Server;
+use Realplexor::Event::Connection;
+use Realplexor::Event::Server;
 use Connection::Wait;
 use Connection::In;
 use Realplexor::Config;
@@ -208,8 +208,8 @@ sub _do_send {
 		# Join response blocks into one "multipart".
 		my $out = "[\n" . join(",\n", @out) . "\n]";
 		my $fh = $fh_by_fh->{$fh};
-		my $r1 = print $fh $out;   $r1 = "undef" if !defined $r1;
-		my $r2 = _shutdown_fh($fh); $r2 = "undef" if !defined $r2;
+		my $r1 = syswrite($fh, $out) && 1; $r1 = "undef" if !defined $r1;
+		my $r2 = _shutdown_fh($fh) && 1;   $r2 = "undef" if !defined $r2;
 		logger("<- sending " . @out . " responses (" . length($out) . " bytes) from [" . join(", ", @seen_ids) . "] (print=$r1, shutdown=$r2)");
 	}
 }
@@ -255,10 +255,10 @@ sub logger {
 		$cleanup_timers->get_num_items(),
 		$events->get_num_items()
 	) if !$nostat && $verb > 2;
-	if ($verb == 2) {
-		print "[" . localtime(time) . "] $msg\n";
+	if ($verb >= 2) {
+		print "[", scalar(localtime(Realplexor::Event::Server::now())), "] ", $msg, "\n";
 	} else {
-		print $msg . "\n";
+		print $msg, "\n";
 	}
 }
 

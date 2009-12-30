@@ -2,28 +2,22 @@
 ## Server abstraction.
 ##
 ## Object of this class listens for incoming connection, accepts
-## it and creates corresponding Event::Lib::Connection object.
+## it and creates corresponding Realplexor::Event::Connection object.
 ##
-package Event::Lib::Server;
+package Realplexor::Event::Server;
 use strict;
 use IO::Socket::INET;
-use Event::Lib;
+use EV;
 use Carp;
-use Time::HiRes 'time';
 
 # Static function.
 # Runs the event mainloop.
 sub mainloop {
-	event_mainloop();
+	EV::loop();
 }
 
-# Static function.
-# Assigns signal handler.
-sub signal {
-	my ($type, $sub) = @_;
-	my $signal = signal_new($type, $sub);
-	$signal->add();
-}
+# Now() function.
+*now = \&EV::now;
 
 # Creates a new server pool.
 sub new {
@@ -32,19 +26,20 @@ sub new {
 		%params,
 		name    => ($params{name} or croak "Argument 'name' required"),
 		listen  => ($params{listen} or croak "Argument 'listen' required"),
-		timeout => (defined $params{timeout}? $params{timeout} : croak "Argument 'timeout' required"),
+		timeout => (defined $params{timeout}? ($params{timeout} || undef) : croak "Argument 'timeout' required"),
 		connectionclass => ($params{connectionclass} or croak "Argument 'connectionclass' required"),
+		events => [],
 	}, $class;
 	my @events = ();
 	my $lastAddr = undef;
 	eval {
 		foreach my $addr (@{$self->{listen}}) {
 			$lastAddr = $addr;
-			push @events, $self->add_listen($addr);
+			push @{$self->{events}}, $self->add_listen($addr);
 		}
 	};
 	if ($@) {
-		$_->remove() foreach @events;
+		$self->{events} = [];
 		croak(($lastAddr? "$lastAddr: " : "") . $@);
 	}
 	return $self;
@@ -54,80 +49,77 @@ sub new {
 # Croaks in case of error.
 sub add_listen {
 	my ($self, $addr) = @_;
-	my $server = IO::Socket::INET->new(
+	my $fh = IO::Socket::INET->new(
 		LocalAddr   => $addr,
 		Proto       => 'tcp',
 		ReuseAddr   => SO_REUSEADDR,
 		Listen      => 50000,
 		Blocking    => 1,
 	) or croak $@;
-	my $event  = event_new(
-		$server, EV_READ|EV_PERSIST, 
-		\&handle_connect,
-		$self
-	);
-	$event->add();
+	my $event = EV::io $fh, EV::READ, sub {
+		$self->handle_connect($fh);
+	};
 	$self->message(undef, "listening $addr");
 	return $event;
 }
 
 # Called on a new connect.
 sub handle_connect {
-	my ($e, $type, $self) = @_;
+	my ($self, $fh) = @_;
 	eval {
-		my $socket = $e->fh->accept() or die "accept failed: $@";
-		$socket->blocking(0);
-		# Try to add an event.
-		my $event = event_new($socket, EV_READ|EV_PERSIST, \&handle_read);
-		$event->add($self->{timeout});
-		# If we are here, event is successfully added. Assign error handler.
+		my $socket = $fh->accept() or die "accept failed: $@";
+		$socket->blocking(0); # this line is REALLY needed, else a hang may appear
+		binmode($socket);
 		my $connection = $self->{connectionclass}->new($socket, $self);
-		$event->args($self, $connection);
-		$event->except_handler(\&handle_except);
+		my $callback; $callback = sub {
+			# Attention! $callback is a circular reference here!
+			if ($self->handle_read($connection, $_[0])) {
+				EV::once($socket, EV::READ, $self->{timeout}, $callback);
+			} else {
+				# Break a circular reference in $callback when disconnected.
+				$callback = undef;
+			}
+		};
+		EV::once($socket, EV::READ, $self->{timeout}, $callback);
 	};
-	$self->error($e->fh, $@) if $@;
+	$self->error($fh, $@) if $@;
 }
 
 # Called on data read.
 sub handle_read {
-	my ($e, $type, $self, $connection) = @_;
-	eval {
-		my $h = $e->fh;
-	
+	my ($self, $connection, $type) = @_;
+	my $fh = $connection->fh;
+	my $result = eval {
 		# Timeout?
-		if ($type == EV_TIMEOUT) {
+		if ($type & EV::TIMEOUT) {
 			$connection->ontimeout();
-			$e->remove();
-			return;
+			return 0;
+		}
+		
+		# An error.
+		if ($type & EV::ERROR) {
+			$connection->onerror("An error returned to event handler");
+			return 0;
 		}
 	
 		# Read the next data chunk.
 		local $/;
-		my $data = <$h>;
+		my $data = <$fh>;
 			
 		# End of the request reached.
 		if (!defined $data) {
-			$e->remove();
-			return;
+			return 0;
 		}
 	
 		# Run data handler.
 		$connection->onread($data);
+		return 1;
 	};
+	return $result if defined $result;
 	if ($@) {
-		$self->error($e->fh, $@);
-		$e->remove();
+		$self->error($fh, $@);
+		return 0;
 	}
-}
-
-# Called on error.
-sub handle_except {
-	my ($e, $msg, $type, $self, $connection) = @_;
-	eval {
-		$connection->onerror($msg);
-		$e->remove();
-	};
-	$self->error($e->fh, $@) if $@;
 }
 
 # Controls debug messages.
@@ -154,7 +146,7 @@ sub message {
 	if (exists $self->{logger}) {
 		$self->{logger}->($msg) if $self->{logger};
 	} else {
-		print "[" . localtime(time) . "] $msg\n";
+		print "[" . localtime(now()) . "] $msg\n";
 	}
 }
 

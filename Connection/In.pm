@@ -2,7 +2,7 @@
 ## IN connection.
 ##
 package Connection::In;
-use base 'Event::Lib::Connection';
+use base 'Realplexor::Event::Connection';
 use strict;
 use POSIX '_exit';
 use Storage::PairsByFhs; 

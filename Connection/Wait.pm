@@ -2,9 +2,8 @@
 ## WAIT connection.
 ##
 package Connection::Wait;
-use base 'Event::Lib::Connection';
+use base 'Realplexor::Event::Connection';
 use strict;
-use Event::Lib;
 use Storage::PairsByFhs; 
 use Storage::ConnectedFhs; 
 use Storage::OnlineTimers; 

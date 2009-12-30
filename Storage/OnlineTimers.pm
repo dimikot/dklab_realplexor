@@ -11,7 +11,7 @@
 package Storage::OnlineTimers;
 use strict;
 use base 'Exporter';
-use Event::Lib;
+use Realplexor::Event::Timer;
 our @EXPORT = qw($online_timers);
 our $online_timers = new Storage::OnlineTimers();
 
@@ -27,12 +27,12 @@ sub assign_stopped_timer_for_id {
 	my $firstTime = 1;
 	# Remove current timer if present.
 	if ($this->{$id}) {
-		$this->{$id}->remove();
+		Realplexor::Event::Timer::remove($this->{$id});
 		delete $this->{$id};
 		$firstTime = 0;
 	}
 	# Create new stopped timer.
-	$this->{$id} = timer_new(sub { 
+	$this->{$id} = Realplexor::Event::Timer::create(sub { 
 		delete $this->{$id};
 		$callback->();
 	});
@@ -42,8 +42,8 @@ sub assign_stopped_timer_for_id {
 sub start_timer_by_id {
 	my ($this, $id, $timeout) = @_;
 	if ($this->{$id}) {
-		$this->{$id}->remove(); # needed to avoid multiple addition of the same timer
-		$this->{$id}->add($timeout);
+		Realplexor::Event::Timer::remove($this->{$id}); # needed to avoid multiple addition of the same timer
+		Realplexor::Event::Timer::start($this->{$id}, $timeout);
 	}
 }
 

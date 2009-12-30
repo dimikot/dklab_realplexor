@@ -7,7 +7,7 @@
 package Storage::CleanupTimers;
 use strict;
 use base 'Exporter';
-use Event::Lib;
+use Realplexor::Event::Timer;
 our @EXPORT = qw($cleanup_timers);
 our $cleanup_timers = new Storage::CleanupTimers();
 
@@ -20,16 +20,16 @@ sub start_timer_for_id {
 	my ($this, $id, $timeout, $callback) = @_;
 	# Remove current timer if present.
 	if ($this->{$id}) {
-		$this->{$id}->remove();
+		Realplexor::Event::Timer::remove($this->{$id});
 		delete $this->{$id};
 	}
 	# Create new timer.
-	$this->{$id} = timer_new(sub { 
+	$this->{$id} = Realplexor::Event::Timer::create(sub { 
 		delete $this->{$id};
 		$callback->();
 	});
 	# Start the timer.
-	$this->{$id}->add($timeout);
+	Realplexor::Event::Timer::start($this->{$id}, $timeout);
 }
 
 sub get_num_items {

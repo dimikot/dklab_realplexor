@@ -84,11 +84,14 @@ while (-s $log != $log_size) {
 
 # Start load testing.
 my $idsRecv = join(",", map { $_ <= $ids_match? ($channel_size - $recv_pack_size + 1) . ":testidentifier{*}" : "10:other$_" } (0 .. ($ids_listen - 1)));
-my $cmd = "ab -R $filled_channels -c $concur -n $req 'http://127.0.0.1:8088/?identifier=$idsRecv'";
-print "# $cmd\n";
-if (0 == system($cmd)) {
-	killchild();
-	sleep 2;
+
+for (my $i = 0; $i < 1; $i++) {
+	my $cmd = "ab -R $filled_channels -c $concur -n $req 'http://127.0.0.1:8088/?identifier=$idsRecv'";
+	print "# $cmd\n";
+	if (0 == system($cmd)) {
+		killchild();
+		sleep 2;
+	}
 }
 
 # Generate profiler HTML.

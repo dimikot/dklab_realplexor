@@ -4,7 +4,6 @@
 package Realplexor::Config;
 use strict;
 use base 'Exporter';
-use Event::Lib;
 use File::Basename;
 use Cwd 'abs_path';
 use POSIX 'strftime';

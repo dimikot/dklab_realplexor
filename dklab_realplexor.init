@@ -34,8 +34,9 @@ CWD="/opt/dklab_realplexor"
 ADDCONFIG="/etc/dklab_realplexor.conf"
 
 # Logging options. By default syslog is used, it allows easy log rotation.
-LOGTAG="dklab_realplexor"
-LOGPRI="local3.info"
+# You may use $CONF variable to refer to the full config file path.
+LOGTAG='realplexor/`basename $CONF`'
+LOGPRI='local3.info'
 
 # Prefix for PID file.
 PIDPREFIX="/var/run/dklab_realplexor"
@@ -53,6 +54,7 @@ BIN="$CWD/dklab_realplexor.pl"
 
 
 start () {
+	export CONF
 	for CONF in $ADDCONFIG; do
 		PIDFILE=${PIDPREFIX}_`basename $CONF`.pid
 		PID=`cat $PIDFILE 2>/dev/null`
@@ -60,7 +62,7 @@ start () {
 			echo "dklab_realplexor for $CONF is already running"
 		else
 			rm -f $PIDFILE 2>/dev/null
-			cd $CWD && /usr/bin/perl $BIN $CONF -p $PIDFILE 2>&1 | logger -p $LOGPRI -t "realplexor/`basename $CONF`" &
+			cd $CWD && /usr/bin/perl $BIN $CONF -p $PIDFILE 2>&1 | logger -p `eval "echo $LOGPRI"` -t `eval "echo $LOGTAG"` &
 			sleep 1
 			PID=`cat $PIDFILE 2>/dev/null`
 			if [ "$PID" != "" ]; then

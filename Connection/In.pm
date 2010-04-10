@@ -119,6 +119,7 @@ sub try_process_cmd {
 	$self->{data} =~ m/(?: ^ | \r?\n\r?\n) (ONLINE|STATS|WATCH) (?:\s+ ([^\r\n]*) )? (?: $tail_re )/six or return 0;
 	# Cmd extracted, process it.
 	$self->{pairs} = undef;
+	$self->{data} = undef;
 	# Assert authorization.
 	$self->assert_auth();
 	my $cmd = uc $1;
@@ -209,7 +210,7 @@ sub cmd_online {
 	$self->_async(sub {
 		my $rids = $online_timers->get_ids_ref($self->_id_prefixes_to_re($id_prefixes));
 		$self->debug("sending " . scalar(@$rids) . " online identifiers");
-		$self->_send_response(@$rids? join(",", @$rids) . "\n" : "");
+		$self->_send_response(join("", map { "$_ " . $connected_fhs->get_num_fhs_by_id($_) . "\n" } @$rids));
 	});
 }
 
@@ -231,21 +232,19 @@ sub cmd_watch {
 sub cmd_stats {
 	my ($self) = @_;
 	return if $self->{cred};
-	$self->_async(sub {
-		$self->debug("sending stats");
-		$self->_send_response(
-			"[data_to_send]\n" .
-			$data_to_send->get_stats() .
-			"\n[connected_fhs]\n" .
-			$connected_fhs->get_stats() .
-			"\n[online_timers]\n" .
-			$online_timers->get_stats() .
-			"\n[cleanup_timers]\n" .
-			$cleanup_timers->get_stats() .
-			"\n[pairs_by_fhs]\n" .
-			$pairs_by_fhs->get_stats()
-		);
-	});
+	$self->debug("sending stats");
+	$self->_send_response(
+		"[data_to_send]\n" .
+		$data_to_send->get_stats() .
+		"\n[connected_fhs]\n" .
+		$connected_fhs->get_stats() .
+		"\n[online_timers]\n" .
+		$online_timers->get_stats() .
+		"\n[cleanup_timers]\n" .
+		$cleanup_timers->get_stats() .
+		"\n[pairs_by_fhs]\n" .
+		$pairs_by_fhs->get_stats()
+	);
 }
 
 # Send response anc close the connection.
@@ -256,7 +255,9 @@ sub _send_response {
 	print $fh "Content-Type: text/plain\r\n";
 	print $fh "Content-Length: " . length($$rdata) . "\r\n\r\n";
 	print $fh $$rdata;
+	$fh->flush(); # MUST be executed! else SIGPIPE may be issued
 	shutdown($fh, 2);
+	$self->{data} = undef;
 }
 
 return 1;

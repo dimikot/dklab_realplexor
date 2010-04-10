@@ -3,7 +3,7 @@
 function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 {
 	// Current JS library version.
-	var VERSION = "1.24";
+	var VERSION = "1.31";
 
 	// Detect current page hostname.
 	var host = document.location.host;

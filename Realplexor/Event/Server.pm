@@ -101,12 +101,12 @@ sub handle_read {
 			$connection->onerror("An error returned to event handler");
 			return 0;
 		}
-	
+		
 		# Read the next data chunk.
 		local $/;
 		my $data = <$fh>;
 			
-		# End of the request reached.
+		# End of the request reached (must never reach be cause of eof() check above?).
 		if (!defined $data) {
 			return 0;
 		}

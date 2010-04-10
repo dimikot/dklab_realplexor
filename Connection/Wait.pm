@@ -111,6 +111,7 @@ sub ontimeout {
 	my ($self) = @_;
 	my $fh = $self->fh;
 	if ($fh) {
+		$fh->flush();
 		shutdown($fh, 2);
 	}
 	$self->SUPER::ontimeout();

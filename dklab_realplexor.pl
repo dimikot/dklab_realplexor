@@ -124,6 +124,10 @@ my @save_argv = @ARGV;
 my $pid_file;
 GetOptions("p=s" => \$pid_file);
 
+# Load config: it is also needed by parent watchdog.
+my $additional_conf = $ARGV[0];
+Realplexor::Config::load($additional_conf, 1);
+
 # Save PID?
 if ($pid_file) {
 	open(local *F, ">", $pid_file) or die "Cannot create $pid_file: $!\n";
@@ -158,22 +162,12 @@ while (1) {
 	};
 	
 	# Waid for child termination.
-	while (wait() != -1) {}
+	Realplexor::Tools::wait_pid_with_memory_limit($pid, $CONFIG{MAX_MEM_MB});
 	sleep(1);
 }
 
 # Called if process dies.
 END {
 	return if !$pid; # children
-	kill(2, $pid);
-	sleep(1);
-	if (kill(0, $pid)) {
-		kill(9, $pid);
-		print STDERR "Killed the child using a heavy SIGKILL.\n";
-	} else {
-		print STDERR "Normally terminated.\n";
-	}
-	if ($pid_file) {
-		unlink($pid_file);
-	}
+	Realplexor::Tools::graceful_kill($pid, $pid_file);
 }

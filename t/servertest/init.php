@@ -54,6 +54,7 @@ function start_realplexor()
 			s/(appending configuration from ).*/$1***/mg;
 			s/(\[)\d+\.\d+/$1*/sg;
 			s/(events=)\d+/$1*/sg;
+			s/\d+( MB)/*$1/sg;
 			s/^/# /sg;
 			if ($del) {
 				$_ = "";
@@ -64,7 +65,7 @@ function start_realplexor()
 		if ($REALPLEXOR_CONF) {
 			$args = escapeshellarg(dirname(__FILE__) . '/fixture/' . $REALPLEXOR_CONF);
 		}
-		run("cd ../.. && perl dklab_realplexor.pl $args | tee -a $OUT_TMP " .
+		run("cd ../.. && perl dklab_realplexor.pl $args 2>&1 | tee -a $OUT_TMP " .
 			"| perl -pe " . escapeshellarg($filter) .
 			($GLOBALS['VERBOSE'] ? "" : " | tail -n1")
 		);

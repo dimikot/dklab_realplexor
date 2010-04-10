@@ -1,4 +1,4 @@
-Dklab Realplexor v1.30: Comet server which handles 1000000+ parallel browser connections.
+Dklab Realplexor v1.31: Comet server which handles 1000000+ parallel browser connections.
 Author: Dmitry Koterov, dkLab (C)
 Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
@@ -93,6 +93,17 @@ events
 
 CHANGELOG
 ---------
+
+* Dklab Realplexor 2010-04-16: v1.31
+  - [BUG] Perl does not call flush() automatically before socket shutdown(). It 
+    sometimes (unstable!) causes unexpected SIGPIPEs and data loss. Fixed: now flush() 
+    is called manually.
+  - [BUG] STATS command is not processed twice anymore.
+  - [NEW] Ability to limit memory usage and auto-restart the daemon if it 
+    consumes too much memory. (Note that unsent data is lost during this restart.)
+  - [NEW} PHP API: cmdOnlineWithCounters(): for each online ID also returns
+    the number of browsers connected just now (it is NOT a "number of online
+    users who listen this channel", but its approximation).
 
 * Dklab Realplexor 2010-02-27: v1.30
   - [SPD] Use EV library (http://search.cpan.org/~mlehmann/EV-3.9/EV.pm)

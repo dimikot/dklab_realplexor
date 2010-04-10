@@ -38,6 +38,11 @@ sub get_num_items {
 	return scalar(keys %$this);
 }
 
+sub get_num_fhs_by_id {
+	my ($this, $id) = @_;
+	return $this->{$id}? scalar(keys %{$this->{$id}}) : 0;
+}
+
 sub get_stats {
 	my ($this) = @_;
 	my @result = ();

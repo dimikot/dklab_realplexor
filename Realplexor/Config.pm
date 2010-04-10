@@ -20,7 +20,7 @@ my $root = dirname(dirname(abs_path(__FILE__)));
 
 # Load config.
 sub load {
-	my ($add) = @_;
+	my ($add, $silent) = @_;
 	# Reset config.
 	%CONFIG = ();
 	# Read default config.
@@ -28,7 +28,7 @@ sub load {
 	# Read custom config.
 	if ($add) {
 		if (-f $add) {
-			Realplexor::Common::logger("CONFIG: appending configuration from $add");
+			Realplexor::Common::logger("CONFIG: appending configuration from $add") if !$silent;
 			do($add); die $@ if $@;
 		} else {
 			Realplexor::Common::logger("CONFIG: file $add does not exist, skipping");

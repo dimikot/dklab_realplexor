@@ -2,7 +2,7 @@
 /**
  * Dklab_Realplexor PHP API.
  *
- * @version 1.24
+ * @version 1.31
  */
 class Dklab_Realplexor
 {
@@ -93,12 +93,14 @@ class Dklab_Realplexor
 	}
 	
 	/**
-	 * Return list of online IDs.
+	 * Return list of online IDs (keys) and number of online browsers
+	 * for each ID. (Now "online" means "connected just now", it is
+	 * very approximate; more precision is in TODO.)
 	 *
 	 * @param array $idPrefixes   If set, only online IDs with these prefixes are returned.
-	 * @return array              List of matched online IDs.
+	 * @return array              List of matched online IDs (keys) and online counters (values).
 	 */
-	public function cmdOnline($idPrefixes = null)
+	public function cmdOnlineWithCounters($idPrefixes = null)
 	{
 		// Add namespace.
 		$idPrefixes = $idPrefixes !== null? (array)$idPrefixes : array();
@@ -111,18 +113,29 @@ class Dklab_Realplexor
 		// Send command.
 		$resp = $this->_sendCmd("online" . ($idPrefixes? " " . join(" ", $idPrefixes) : ""));
 		if (!strlen(trim($resp))) return array();
-		$resp = explode(",", trim($resp));
-		// Cut off namespaces.
-		if (strlen($this->_namespace)) {
-			foreach ($resp as $i => $id) {
-				if (strpos($id, $this->_namespace) === 0) {
-					$resp[$i] = substr($id, strlen($this->_namespace));
-				}
+		// Parse the result and trim namespace.
+		$result = array();
+		foreach (explode("\n", $resp) as $line) {
+			@list ($id, $counter) = explode(" ", $line);
+			if (!strlen($id)) continue;
+			if (strlen($this->_namespace) && strpos($id, $this->_namespace) === 0) {
+				$id = substr($id, strlen($this->_namespace));
 			}
+			$result[$id] = $counter;
 		}
-		return $resp;
+		return $result;
 	}
-	
+
+	/**
+	 * Return list of online IDs.
+	 *
+	 * @param array $idPrefixes   If set, only online IDs with these prefixes are returned.
+	 * @return array              List of matched online IDs.
+	 */
+	public function cmdOnline($idPrefixes = null)
+	{
+		return array_keys($this->cmdOnlineWithCounters($idPrefixes));
+	}
 	
 	/**
 	 * Return all Realplexor events (e.g. ID offline/offline changes)
@@ -183,7 +196,7 @@ class Dklab_Realplexor
 	{
 		return $this->_send(null, "$cmd\n");
 	}
-	
+
 	/**
 	 * Internal method.
 	 * Send specified data to IN channel. Return response data.

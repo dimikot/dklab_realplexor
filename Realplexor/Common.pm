@@ -97,6 +97,7 @@ sub _shutdown_fh {
 		$connected_fhs->del_from_id_by_fh($pair->[1], $fh);
 	}
 	$pairs_by_fhs->remove_by_fh($fh);
+	$fh->flush(); # MUST be executed! shutdown() does not issue flush()!
 	return shutdown($fh, 2);
 }
 
@@ -238,6 +239,7 @@ sub send_static {
 	print $fh "Cache-Control: public\r\n";
 	print $fh "\r\n";
 	print $fh $CONFIG{"${param}_CONTENT"};
+	$fh->flush(); # MUST be executed! shutdown() does not issue flush()!
 	shutdown($fh, 2); # don't use close, it breaks event machine!
 }
 

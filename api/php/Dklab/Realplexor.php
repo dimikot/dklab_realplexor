@@ -147,6 +147,7 @@ class Dklab_Realplexor
 	 */
 	public function cmdWatch($fromPos, $idPrefixes = null)
 	{
+		$idPrefixes = $idPrefixes !== null? (array)$idPrefixes : array();
 		if (!$fromPos) {
 			$fromPos = 0;
 		}

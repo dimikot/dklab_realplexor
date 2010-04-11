@@ -101,9 +101,11 @@ CHANGELOG
   - [BUG] STATS command is not processed twice anymore.
   - [NEW] Ability to limit memory usage and auto-restart the daemon if it 
     consumes too much memory. (Note that unsent data is lost during this restart.)
-  - [NEW} PHP API: cmdOnlineWithCounters(): for each online ID also returns
+  - [NEW] PHP API: cmdOnlineWithCounters(): for each online ID also returns
     the number of browsers connected just now (it is NOT a "number of online
     users who listen this channel", but its approximation).
+  - [BUG] Minor fixes in clean_old_data_for_id (bug is not reproduced, 
+    but now surrounding code is better).
 
 * Dklab Realplexor 2010-02-27: v1.30
   - [SPD] Use EV library (http://search.cpan.org/~mlehmann/EV-3.9/EV.pm)

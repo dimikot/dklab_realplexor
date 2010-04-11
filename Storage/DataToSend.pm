@@ -38,9 +38,9 @@ sub add_dataref_to_id {
 		$list = $this->{$id} = [];
 		tie @$list, "Tie::Array::Sorted", sub { $_[1][0] <=> $_[0][0] };
 	}
-	# TODO: in most cases new cursor is greater than the first array
+	# In most cases new cursor is greater than the first array
 	# element, so we may unshif it without re-sorting to speedup.
-	push @$list, [$cursor, $rdata, $rlimit_ids];
+	unshift @$list, [$cursor, $rdata, $rlimit_ids];
 }
 
 sub get_data_by_id {
@@ -56,7 +56,7 @@ sub get_num_items {
 sub clean_old_data_for_id {
 	my ($this, $id, $max_num) = @_;
 	return if !$this->{$id} || @{$this->{$id}} <= $max_num;
-	splice @{$this->{$id}}, 0, (@{$this->{$id}} - $max_num);
+	splice @{$this->{$id}}, $max_num; # old elements are at the end
 }
 
 sub get_stats {

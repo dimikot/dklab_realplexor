@@ -134,7 +134,7 @@ sub send_pendings {
 			ONE_ITEM:
 			foreach my $item (@$data) {
 				# If we found an element with smaller cursor, abort iteration,
-				# because all elements are sorted by cursor.
+				# because all elements are sorted by cursor (bigger cursor first).
 				last if $item->[0] <= $listen_cursor;
 				# Process a single data item in context of this FH.
 				my ($cursor, $rdata, $limit_ids) = @$item;

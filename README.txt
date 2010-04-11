@@ -106,6 +106,7 @@ CHANGELOG
     users who listen this channel", but its approximation).
   - [BUG] Minor fixes in clean_old_data_for_id (bug is not reproduced, 
     but now surrounding code is better).
+  - [NEW] Visibility:hidden for IFRAME. It is good when BODY has relative position.
 
 * Dklab Realplexor 2010-02-27: v1.30
   - [SPD] Use EV library (http://search.cpan.org/~mlehmann/EV-3.9/EV.pm)

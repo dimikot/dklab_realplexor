@@ -94,6 +94,10 @@ events
 CHANGELOG
 ---------
 
+* Dklab Realplexor 2010-08-11: v1.32
+  - [SPD] When empty HTTP body is passed to IN connection, it is now ignored, no warnings generated.
+  - [SPD] Remove old data from channels BEFORE data processing/sending.
+
 * Dklab Realplexor 2010-04-16: v1.31
   - [BUG] Perl does not call flush() automatically before socket shutdown(). It 
     sometimes (unstable!) causes unexpected SIGPIPEs and data loss. Fixed: now flush() 

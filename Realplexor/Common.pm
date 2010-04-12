@@ -106,6 +106,21 @@ sub _shutdown_fh {
 sub send_pendings {
 	my ($ids) = @_;
 	
+	# Remain only unique IDs.
+	my %ids_uniq = ();
+	@ids_uniq{@$ids} = ();
+	$ids = [ keys %ids_uniq ];
+
+	# Remove old data; do it BEFORE data processing/sending. Why?
+	# Because if we receive 1000 new data rows for the same ID,
+	# they will all be sent to all connected clients and slow down
+	# the performance. When we clean the data before sending, we
+	# guarantee that the inner loop will have less than MAX_DATA_FOR_ID
+	# iterations for each ID.
+	foreach my $id (@$ids) {
+		$data_to_send->clean_old_data_for_id($id, $CONFIG{MAX_DATA_FOR_ID});
+	}
+	
 	# Functions to be called to check data visibility.
 	my @visibility_checkers =  (
 		\&hook_check_visibility, 
@@ -169,10 +184,6 @@ sub send_pendings {
 	# Perform sending operation.
 	_do_send(\%data_by_fh, \%seen_ids, \%fh_by_fh);
 	
-	# Remove old data.
-	foreach my $id (@$ids) {
-		$data_to_send->clean_old_data_for_id($id, $CONFIG{MAX_DATA_FOR_ID});
-	}
 }
 
 # Send data to each connection (json array format).

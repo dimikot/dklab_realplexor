@@ -7,10 +7,11 @@ use IO::Socket;
 use threads;
 
 $| = 1;
-print "Press Enter to create connections..."; scalar <STDIN>;
 
 my $num = ($ARGV[0] || 10000);
 my $nproc = 1;
+
+print "Press Enter to create $num connections..."; scalar <STDIN>;
 
 my (@pids, $p, $pid);
 for ($p = 1; $p <= $nproc; $p++) {
@@ -25,9 +26,11 @@ for ($p = 1; $p <= $nproc; $p++) {
 if ($pid) {
 	$SIG{CHLD} = 'IGNORE';
 	$SIG{INT} = sub { kill 2, @pids; exit; };
-	while (1) {
+	while (@pids) {
 		sleep(1);
+		@pids = grep { kill(0, $_) } @pids;
 	}
+	exit();
 }
 
 my @sock = ();
@@ -43,16 +46,24 @@ for (my $i = 0; $i < $num / $nproc; $i++) {
 	push @sock, $sock;
 	my $prev = select($sock); $| = 1; select($prev);
 	print $sock "test $i\n";
-	print $sock "identifier=10:$i\n";
+	print $sock "identifier=10:id$i\n";
 	print STDERR ".";
+	$sock->flush();
 }
 print "?";
-sleep(1000);
 
-for (my $i = 0; $i < @sock; $i++) {
-	my $sock = $sock[$i];
-	while (<$sock>) {
-		chomp;
-		print "$p# [$i]: $_\n";
+if ($num == 1 && $nproc == 1) {
+	print "\nPress Enter to read all the responses";
+	scalar <STDIN>;
+	for (my $i = 0; $i < @sock; $i++) {
+		my $sock = $sock[$i];
+		while (<$sock>) {
+			chomp;
+			print "$p# [$i]: $_\n";
+		}
+		close($sock);
 	}
+} else {
+	# Wait forever.
+	sleep(10000) while 1;
 }

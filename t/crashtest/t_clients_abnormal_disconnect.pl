@@ -21,7 +21,7 @@ for (my $i = 0; $i < ($ARGV[0] || 10000); $i++) {
 	}
 	push @sock, $sock;
 	print $sock "test $i\n";
-	print $sock "identifier=$i\n";
+	print $sock "identifier=id$i\n";
 	print ".";
 #	usleep(1000);
 }

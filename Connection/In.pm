@@ -139,6 +139,11 @@ sub try_process_pairs {
 	if (defined $pairs) {
 		# Clear headers from the data.
 		my (undef, $data) = split /\r?\n\r?\n/s, $self->{data}, 2;
+		if (!defined($data)) {
+			$self->debug("passed empty HTTP body, ignored");
+			$self->{data} = undef;
+			return;
+		}
 		my $login = $self->{cred}? $self->{cred}[0] : undef;
 		my @ids_to_process = ();
 		foreach my $pair (@$pairs) {

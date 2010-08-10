@@ -220,7 +220,9 @@ sub _do_send {
 		# Join response blocks into one "multipart".
 		my $out = "[\n" . join(",\n", @out) . "\n]";
 		my $fh = $fh_by_fh->{$fh};
-		my $r1 = syswrite($fh, $out) && 1; $r1 = "undef" if !defined $r1;
+		# Attention! We MUST use print, not syswrite, because print correctly
+		# continues broken transmits for large data packets.
+		my $r1 = (print $fh $out) && 1;    $r1 = "undef" if !defined $r1;
 		my $r2 = _shutdown_fh($fh) && 1;   $r2 = "undef" if !defined $r2;
 		logger("<- sending " . @out . " responses (" . length($out) . " bytes) from [" . join(", ", @seen_ids) . "] (print=$r1, shutdown=$r2)");
 	}

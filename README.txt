@@ -97,6 +97,8 @@ CHANGELOG
 * Dklab Realplexor 2010-08-11: v1.32
   - [SPD] When empty HTTP body is passed to IN connection, it is now ignored, no warnings generated.
   - [SPD] Remove old data from channels BEFORE data processing/sending.
+  - [BUG] Use print instead of syswrite, because for large amount of data syswrite sometimes 
+    returns before all this data is transmitted.
 
 * Dklab Realplexor 2010-04-16: v1.31
   - [BUG] Perl does not call flush() automatically before socket shutdown(). It 

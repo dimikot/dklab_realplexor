@@ -1,4 +1,4 @@
-Dklab Realplexor v1.31: Comet server which handles 1000000+ parallel browser connections.
+Dklab Realplexor v1.32: Comet server which handles 1000000+ parallel browser connections.
 Author: Dmitry Koterov, dkLab (C)
 Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/

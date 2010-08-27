@@ -83,7 +83,7 @@ Dklab_Realplexor.prototype.subscribe = function(id, callback) {
 	if (!this._map[id]) this._map[id] = { cursor: null, callbacks: [] };
 	var chain = this._map[id].callbacks;
 	for (var i = 0; i < chain.length; i++) {
-		if (chain[i] === callback) return;
+		if (chain[i] === callback) return this;
 	}
 	chain.push(callback);
 	return this;
@@ -93,16 +93,16 @@ Dklab_Realplexor.prototype.subscribe = function(id, callback) {
 // You do not need to reconnect to the server (see execute()) 
 // to stop calling of this callback.
 Dklab_Realplexor.prototype.unsubscribe = function(id, callback) {
-	if (!this._map[id]) return;
+	if (!this._map[id]) return this;
 	if (callback == null) {
 		this._map[id].callbacks = [];
-		return;
+		return this;
 	}
 	var chain = this._map[id].callbacks;
 	for (var i = 0; i < chain.length; i++) {
 		if (chain[i] === callback) {
 			chain.splice(i, 1);
-			return;
+			return this;
 		}
 	}
 	return this;

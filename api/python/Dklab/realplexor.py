@@ -90,7 +90,7 @@ class Dklab_Realplexor(object):
         # Send command.
         resp = self._sendCmd("online" + (" " + " ".join(idPrefixes) if idPrefixes else ""))
         if not resp.strip(): 
-            return []
+            return {}
         # Parse the result and trim namespace.
         result = {}
         for line in resp.split("\n"): 

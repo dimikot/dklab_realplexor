@@ -276,6 +276,7 @@ Dklab_Realplexor_Loader = {
 			// and reaches the connection limit.
 			try { 
 				if (th._lastXmlhttp) {
+					th._lastXmlhttp.onreadystatechange = function(){};
 					th._lastXmlhttp.abort();
 					th._lastXmlhttp = null;
 				}
@@ -284,6 +285,7 @@ Dklab_Realplexor_Loader = {
 		if (this._lastXmlhttp) {
 			var xhr = this._lastXmlhttp;
 			this._lastXmlhttp = null;
+			xhr.onreadystatechange = function(){};
 			xhr.abort();  // abort() does not make bounce if this._lastXmlhttp is null
 		}
 		this._namespace = namespace && namespace.length? namespace : null;

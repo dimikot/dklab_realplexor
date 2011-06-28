@@ -32,7 +32,7 @@ IN <== "aaa"
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 # IN: DEBUG: parsed IDs; login is "unk"
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
-# IN: ?:?: ERROR: unknown login: unk
+# IN: ERROR: unknown login: unk
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 # IN: DEBUG: connection closed
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]

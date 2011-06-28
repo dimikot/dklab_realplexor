@@ -17,7 +17,9 @@ if (!isset($REALPLEXOR_CONF)) $REALPLEXOR_CONF = '';
 $IS_BIN = strlen(getenv("isbin"))? !!getenv("isbin") : @is_executable(dirname(__FILE__) . "/../../dklab_realplexor");
 
 // Debug mode (no output filtering)?
-$DEBUG = !!getenv('debug') || $VERBOSE;
+// ATTENTION: must NOT be set to 1 if VERBOSE is active! Verbose is
+// used within unit-tests too, so it is NOT a fully-debug flag.
+$DEBUG = !!getenv('debug') || (@$_SERVER['argv'][1] == "-v");
 
 
 // Start the realplexor.
@@ -57,6 +59,7 @@ function start_realplexor()
 				s/\s*\[\w\w\w\s.*?\]\s*//sg;
 				s/\s*Opened files limit.*//mg;
 				s/\d+\.\d+\.\d+\.\d+:\d+:\s*//sg;
+				s/\?:\?:\s*//sg;
 				s/\d+( bytes)/<N>$1/s;
 				s/(appending configuration from ).*/$1***/mg;
 				s/(\[)\d+\.\d+/$1*/sg;

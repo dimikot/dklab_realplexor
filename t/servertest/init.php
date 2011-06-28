@@ -14,10 +14,10 @@ if (!isset($VERBOSE)) $VERBOSE = @$_SERVER['argv'][1] == "-v"? 1 : 0;
 if (!isset($REALPLEXOR_CONF)) $REALPLEXOR_CONF = '';
 
 // Testing a binary version?
-$IS_BIN = @is_executable(dirname(__FILE__) . "/../../dklab_realplexor");
+$IS_BIN = strlen(getenv("isbin"))? !!getenv("isbin") : @is_executable(dirname(__FILE__) . "/../../dklab_realplexor");
 
 // Debug mode (no output filtering)?
-$DEBUG = !!getenv('debug');
+$DEBUG = !!getenv('debug') || $VERBOSE;
 
 
 // Start the realplexor.

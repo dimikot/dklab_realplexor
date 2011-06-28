@@ -13,6 +13,12 @@ if (!isset($VERBOSE)) $VERBOSE = @$_SERVER['argv'][1] == "-v"? 1 : 0;
 // Arguments to override default config.
 if (!isset($REALPLEXOR_CONF)) $REALPLEXOR_CONF = '';
 
+// Testing a binary version?
+$IS_BIN = @is_executable(dirname(__FILE__) . "/../../dklab_realplexor");
+
+// Debug mode (no output filtering)?
+$DEBUG = !!getenv('debug');
+
 
 // Start the realplexor.
 start_realplexor();
@@ -35,37 +41,47 @@ function run($cmd)
 function kill_realplexor()
 {
 	global $OUT_TMP;
-	run("ps ax | perl -ne '/^\s*(\d+).*perl.*dklab_[r]ealplexor.pl/ and kill 9, $1'");
+	run("ps ax | perl -ne '/^\s*(\d+).*dklab_[r]ealplexor/ and kill 9, $1'");
 	if ($OUT_TMP) unlink($OUT_TMP);
 }
 
 function start_realplexor()
 {
-	global $REALPLEXOR_CONF, $OUT_TMP, $OUT_TMP_FH;
+	global $REALPLEXOR_CONF, $OUT_TMP, $OUT_TMP_FH, $IS_BIN, $DEBUG;
 	kill_realplexor();
 	$OUT_TMP = tempnam('non-existent', '');
 	if (pcntl_fork() == 0) {
-		$filter = '
-			$| = 1;
-			s/\s*\[\w\w\w\s.*?\]\s*//sg;
-			s/\s*Opened files limit.*//mg;
-			s/\d+\.\d+\.\d+\.\d+:\d+:\s*//sg;
-			s/\d+( bytes)/<N>$1/s;
-			s/(appending configuration from ).*/$1***/mg;
-			s/(\[)\d+\.\d+/$1*/sg;
-			s/(events=)\d+/$1*/sg;
-			s/\d+( MB)/*$1/sg;
-			s/^/# /sg;
-			if ($del) {
-				$_ = "";
-				$del--;
-			}
-		';
-		$args = '';
-		if ($REALPLEXOR_CONF) {
-			$args = escapeshellarg(dirname(__FILE__) . '/fixture/' . $REALPLEXOR_CONF);
+		if (!$DEBUG) {
+			$filter = '
+				$| = 1;
+				s/\s*\[\w\w\w\s.*?\]\s*//sg;
+				s/\s*Opened files limit.*//mg;
+				s/\d+\.\d+\.\d+\.\d+:\d+:\s*//sg;
+				s/\d+( bytes)/<N>$1/s;
+				s/(appending configuration from ).*/$1***/mg;
+				s/(\[)\d+\.\d+/$1*/sg;
+				s/(events=)\d+/$1*/sg;
+				s/^/# /sg;
+				if ($del) {
+					$_ = "";
+					$del--;
+				}
+			';
+		} else {
+			$filter = '$| = 1';
 		}
-		run("cd ../.. && perl dklab_realplexor.pl $args 2>&1 | tee -a $OUT_TMP " .
+		if ($IS_BIN) {
+			$exe = "./dklab_realplexor";
+			$conf = $REALPLEXOR_CONF;
+		} else {
+			$exe = "perl dklab_realplexor.pl";
+			$conf = $REALPLEXOR_CONF;
+		}
+		$args = '';
+		if ($conf) {
+			$args = escapeshellarg(dirname(__FILE__) . '/fixture/' . $conf);
+		}
+		run("cd ../.. && $exe $args 2>&1 | tee -a $OUT_TMP " .
 			"| perl -pe " . escapeshellarg($filter) .
 			($GLOBALS['VERBOSE'] ? "" : " | tail -n1")
 		);
@@ -125,7 +141,7 @@ function send_in($ids, $data, $noWaitResponse = false)
 
 function recv_in($numLines = null)
 {
-	global $IN_SOCK;
+	global $IN_SOCK, $DEBUG;
 	if (!$numLines) {
 		$numLines = 1e10;
 	}
@@ -135,8 +151,10 @@ function recv_in($numLines = null)
 	}
 	$ret = join("", $lines);
 	$ret = trim($ret);
-	$ret = preg_replace('/\(0x\w+\)/', '(0x*)', $ret);
-	$ret = preg_replace('/(online |offline |FAKE |=> |\[)[\d.]+:/s', '$1*:', $ret);
+	if (!$DEBUG) {
+		$ret = preg_replace('/\(0x\w+\)/', '(0x*)', $ret);
+		$ret = preg_replace('/(online |offline |FAKE |=> |\[)[\d.]+:/s', '$1*:', $ret);
+	}
 	echo preg_replace('/^/m', 'IN ==> ', $ret) . "\n";
 	if (feof($IN_SOCK)) {
 		fclose($IN_SOCK);

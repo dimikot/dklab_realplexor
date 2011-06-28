@@ -1,11 +1,15 @@
 --TEST--
 dklab_realplexor: check chains usage
 
+--SKIPIF--
+<?php 
+require dirname(__FILE__) . '/init.php';
+if (!$IS_BIN) echo 'skip'; 
+?>
 --FILE--
 <?php
 $REALPLEXOR_CONF = "small_chain_len.conf";
 require dirname(__FILE__) . '/init.php';
-
 for ($i = 0; $i < 20; $i++) {
 	send_wait("
 		identifier=abc" . sprintf("%02d", $i) . "
@@ -81,16 +85,8 @@ WA :: Disconnecting.
 IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
-IN ==> Content-Length: 192
+IN ==> Content-Length: 64
 IN ==> 
-IN ==> online *:abc08
-IN ==> online *:abc09
-IN ==> online *:abc10
-IN ==> online *:abc11
-IN ==> online *:abc12
-IN ==> online *:abc13
-IN ==> online *:abc14
-IN ==> online *:abc15
 IN ==> online *:abc16
 IN ==> online *:abc17
 IN ==> online *:abc18

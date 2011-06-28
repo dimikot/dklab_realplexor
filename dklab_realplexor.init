@@ -50,7 +50,11 @@ fi
 [ -f /etc/sysconfig/${NAME} ] && . /etc/sysconfig/${NAME}
 
 # Script to execute.
-BIN="$CWD/dklab_realplexor.pl"
+if [ -x $CWD/dklab_realplexor ]; then
+	BIN="$CWD/dklab_realplexor"
+else
+	BIN="/usr/bin/perl $CWD/dklab_realplexor.pl"
+fi
 
 
 start () {
@@ -62,7 +66,7 @@ start () {
 			echo "dklab_realplexor for $CONF is already running"
 		else
 			rm -f $PIDFILE 2>/dev/null
-			cd $CWD && /usr/bin/perl $BIN $CONF -p $PIDFILE 2>&1 | logger -p `eval "echo $LOGPRI"` -t `eval "echo $LOGTAG"` &
+			cd $CWD && $BIN $CONF -p $PIDFILE 2>&1 | logger -p `eval "echo $LOGPRI"` -t `eval "echo $LOGTAG"` &
 			sleep 1
 			PID=`cat $PIDFILE 2>/dev/null`
 			if [ "$PID" != "" ]; then

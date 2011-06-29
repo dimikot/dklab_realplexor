@@ -21,10 +21,15 @@ $IS_BIN = strlen(getenv("isbin"))? !!getenv("isbin") : @is_executable(dirname(__
 // used within unit-tests too, so it is NOT a fully-debug flag.
 $DEBUG = !!getenv('debug') || (@$_SERVER['argv'][1] == "-v");
 
+// Do not run the daemon?
+$NORUN = !!@$NORUN;
+
 
 // Start the realplexor.
-start_realplexor();
-register_shutdown_function('kill_realplexor'); # MUST be AFTER starting due to fork()!
+if (empty($NORUN)) {
+	start_realplexor();
+	register_shutdown_function('kill_realplexor'); # MUST be AFTER starting due to fork()!
+}
 
 // Debug human-readable output of any variable.
 function printr($value, $comment=null)

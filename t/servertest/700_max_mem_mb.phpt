@@ -21,7 +21,7 @@ expect("/Normally/");
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 # Switching current user to unprivileged "nobody"
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
-# Daemon process uses %d MB of memory which is larger than %d MB. Killing...
+# Daemon process uses %f MB of memory which is larger than %d MB. Killing...
 # SIGINT received, exiting
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 # Normally terminated.

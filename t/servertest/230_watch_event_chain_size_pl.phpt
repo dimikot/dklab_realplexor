@@ -3,7 +3,7 @@ dklab_realplexor: check chains usage
 
 --SKIPIF--
 <?php 
-$REALPLEXOR_CONF = "small_chain_len.conf";
+$NORUN = 1;
 require dirname(__FILE__) . '/init.php';
 if ($IS_BIN) echo 'skip'; 
 ?>

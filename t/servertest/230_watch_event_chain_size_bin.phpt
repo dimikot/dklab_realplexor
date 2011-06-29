@@ -2,7 +2,8 @@
 dklab_realplexor: check chains usage
 
 --SKIPIF--
-<?php 
+<?php
+$NORUN = 1;
 require dirname(__FILE__) . '/init.php';
 if (!$IS_BIN) echo 'skip'; 
 ?>

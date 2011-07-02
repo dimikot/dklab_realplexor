@@ -9,7 +9,7 @@ use threads;
 $| = 1;
 
 my $num = ($ARGV[0] || 10000);
-my $nproc = 1;
+my $nproc = ($ARGV[1] || 1);
 
 print "Press Enter to create $num connections..."; scalar <STDIN>;
 
@@ -24,15 +24,19 @@ for ($p = 1; $p <= $nproc; $p++) {
 }
 
 if ($pid) {
+	# Parent process waits until all children are dead.
 	$SIG{CHLD} = 'IGNORE';
 	$SIG{INT} = sub { kill 2, @pids; exit; };
 	while (@pids) {
 		sleep(1);
 		@pids = grep { kill(0, $_) } @pids;
 	}
+
 	exit();
 }
 
+# Child process code.
+print "\n[PID=$$] Creating connections...";
 my @sock = ();
 for (my $i = 0; $i < $num / $nproc; $i++) {
 	my $sock = IO::Socket::INET->new(
@@ -50,9 +54,9 @@ for (my $i = 0; $i < $num / $nproc; $i++) {
 	print STDERR ".";
 	$sock->flush();
 }
-print "?";
+print "\n[PID=$$] All connections are established.\n";
 
-if ($num == 1 && $nproc == 1) {
+if ($nproc == 1) {
 	print "\nPress Enter to read all the responses";
 	scalar <STDIN>;
 	for (my $i = 0; $i < @sock; $i++) {

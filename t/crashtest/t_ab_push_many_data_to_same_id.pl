@@ -5,7 +5,7 @@ Realplexor::Tools::rerun_unlimited();
 use IO::Socket;
 use Time::HiRes qw(time usleep);
 
-my $num_datas = $ARGV[0] || 6;
+my $num_datas = $ARGV[0] || 1;
 my $data_len = $ARGV[1] || 1024;
 my $id = "id0";
 my $cursor = 10;

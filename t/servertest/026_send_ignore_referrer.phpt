@@ -6,6 +6,7 @@ dklab_realplexor: ignore IDs in Referer header
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
+	Abc: def
 	Referer: blabla?identifier=IFRAME
 	identifier=abc,def
 ");
@@ -14,6 +15,7 @@ recv_wait();
 
 ?>
 --EXPECT--
+WA <-- Abc: def
 WA <-- Referer: blabla?identifier=IFRAME
 WA <-- identifier=abc,def
 IN <== X-Realplexor: identifier=abc

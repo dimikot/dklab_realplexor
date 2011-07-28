@@ -1,5 +1,5 @@
 --TEST--
-dklab_realplexor: no OFFLINE event is be generated until the last ID is disconnected
+dklab_realplexor: no OFFLINE event should be generated until the last ID is disconnected
 
 --FILE--
 <?php

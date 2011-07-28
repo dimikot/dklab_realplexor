@@ -230,7 +230,9 @@ Dklab_Realplexor_Loader = {
     	
 	// Loop function.
 	_loopFunc: function() {
-		var idParam = this.JS_IDENTIFIER + '=' + this._makeRequestId();
+		var requestId = this._makeRequestId();
+		if (!requestId.length) return;
+		var idParam = this.JS_IDENTIFIER + '=' + requestId;
 		var url = null, postData = null;
 		if (idParam.length + this.JS_WAIT_URI.length < 1700) {
 			// GET method is only for not too long URLs.

@@ -1,0 +1,25 @@
+<div id="TEST">
+    <?=basename($_SERVER['REQUEST_URI'])?>: no HTTP request should be performed if no subscriptions
+</div>
+
+
+<?include "contrib/init.php"?>
+<div id="FILE">
+	<script>
+	execute(function() {
+		substituteResponse([
+			[
+				{ identifier: '10:AAA', data: "'aaa'" },
+			],
+		]);
+		realplexor.execute();
+		JsTest.write("OK");
+		setTimeout(function() { JsTest.analyze() }, 700);
+	});
+	</script>
+</div>
+
+
+<pre id="EXPECT">
+OK
+</pre>

@@ -1,4 +1,4 @@
-Dklab Realplexor v1.32: Comet server which handles 1000000+ parallel browser connections.
+Dklab Realplexor v1.40: Comet server which handles 1000000+ parallel browser connections.
 Author: Dmitry Koterov, dkLab (C)
 Home page: http://dklab.ru/lib/dklab_realplexor/
 Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
@@ -46,7 +46,7 @@ INSTALLATION ON LINUX
      # update-rc.d dklab_realplexor start
 
 
-SYNOPSYS
+SYNOPSIS
 --------
 
 1. In JavaScript code, execute:
@@ -93,6 +93,14 @@ events
 
 CHANGELOG
 ---------
+
+* Dklab Realplexor 2011-07-28: v1.40
+  - [NEW] Python API added (experimental)
+  - [NEW] Added missed "return this" for chained JS calls.
+  - [BUG] Firefox 4 bugfix against 'attempt to run compile-and-go script on a cleared scope'.
+  - [BUG] Minor changes & better support for phpt tests.
+  - [BUG] No OFFLINE event should be generated until the last connection with ID is disconnected.
+  - [BUG] If no IDs are subscribed in JS, do not connect to the server with empty ID list.
 
 * Dklab Realplexor 2010-08-11: v1.32
   - [SPD] When empty HTTP body is passed to IN connection, it is now ignored, no warnings generated.

@@ -126,8 +126,10 @@ sub onclose {
 			my ($cursor, $id) = @$pair;
 			# Remove the client from all lists.
 			$connected_fhs->del_from_id_by_fh($id, $self->fh);
-			# Turn on or restart online timer.
-			$online_timers->start_timer_by_id($id, $CONFIG{OFFLINE_TIMEOUT});
+			# Turn on offline timer if it was THE LAST connection.
+			if (!$connected_fhs->get_num_fhs_by_id($id)) {
+				$online_timers->start_timer_by_id($id, $CONFIG{OFFLINE_TIMEOUT});
+			}
 		}
 	}
 	$pairs_by_fhs->remove_by_fh($self->fh);

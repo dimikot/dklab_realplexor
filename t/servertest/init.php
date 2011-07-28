@@ -95,7 +95,7 @@ function start_realplexor()
 		);
 		exit();
 	}
-	expect('/listening 127.0.0.1/');
+	expect('/Switching current user/');
 }
 
 function expect($re)

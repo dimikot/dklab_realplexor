@@ -52,13 +52,13 @@ sub onread {
 		# Check if we have special marker: IFRAME.
 		if ($pairs->[0][1] eq $CONFIG{IFRAME_ID}) {
 			$self->debug("IFRAME marker received, sending content");
-			Realplexor::Common::send_static($self->fh, 'IFRAME', 'text/html');
+			Realplexor::Common::send_static($self->fh, 'IFRAME', "text/html; charset=$CONFIG{CHARSET}");
 			return;
 		}
 		# Check if we have special marker: SCRIPT.
 		if ($pairs->[0][1] eq $CONFIG{SCRIPT_ID}) {
 			$self->debug("SCRIPT marker received, sending content");
-			Realplexor::Common::send_static($self->fh, 'SCRIPT', 'text/javascript');
+			Realplexor::Common::send_static($self->fh, 'SCRIPT', "text/javascript; charset=$CONFIG{CHARSET}");
 			return;
 		}
 		

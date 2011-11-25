@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Realplexor">
+      <UniqueIdentifier>{5262f083-86b3-4b4c-9466-49633d079574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Realplexor\Event">
+      <UniqueIdentifier>{5d4dc7b5-037a-4384-98cb-85c51f301d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Connection">
+      <UniqueIdentifier>{49c71d4c-67b2-4a90-a2d6-234c0ed3c1f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Storage">
+      <UniqueIdentifier>{c40bb46f-7882-4103-8886-7a4190fcde53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\utils">
+      <UniqueIdentifier>{8160d2a8-2ca8-410f-b6e3-8bab9531b2fd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Realplexor\Common.h">
+      <Filter>Файлы исходного кода\Realplexor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Realplexor\Config.h">
+      <Filter>Файлы исходного кода\Realplexor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Realplexor\Tools.h">
+      <Filter>Файлы исходного кода\Realplexor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Realplexor\Event\Connection.h">
+      <Filter>Файлы исходного кода\Realplexor\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Realplexor\Event\Server.h">
+      <Filter>Файлы исходного кода\Realplexor\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Realplexor\Event\Signal.h">
+      <Filter>Файлы исходного кода\Realplexor\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Realplexor\Event\Timer.h">
+      <Filter>Файлы исходного кода\Realplexor\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Connection\In.h">
+      <Filter>Файлы исходного кода\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Connection\Wait.h">
+      <Filter>Файлы исходного кода\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Storage\CleanupTimers.h">
+      <Filter>Файлы исходного кода\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Storage\OnlineTimers.h">
+      <Filter>Файлы исходного кода\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Storage\Events.h">
+      <Filter>Файлы исходного кода\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dklab_realplexor.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\checked_map.h">
+      <Filter>Файлы исходного кода\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\ev++0x.h">
+      <Filter>Файлы исходного кода\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\misc.h">
+      <Filter>Файлы исходного кода\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\Socket.h">
+      <Filter>Файлы исходного кода\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\stdmiss.h">
+      <Filter>Файлы исходного кода\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Storage\ConnectedFhs.h">
+      <Filter>Файлы исходного кода\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Storage\DataToSend.h">
+      <Filter>Файлы исходного кода\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Storage\PairsByFhs.h">
+      <Filter>Файлы исходного кода\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\prefix_checker.h">
+      <Filter>Файлы исходного кода\utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\dklab_realplexor.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

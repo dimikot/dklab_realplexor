@@ -21,7 +21,7 @@ function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 		+ ' id="' + this._iframeId + '"'
 		+ ' onload="' + 'Dklab_Realplexor' + '._iframeLoaded(&quot;' + this._iframeId + '&quot;)"'
 		+ ' src="' + fullUrl + '?identifier=IFRAME&amp;HOST=' + host + '&amp;version=' + this.version + '"'
-		+ ' style="position:absolute; width:200px; height: 200px; left: -1000px; visibility:hidden"' +
+		+ ' style="position:absolute; display:none; width:200px; height: 200px; left: -1000px;"' +
 		'></iframe>';
 	this._iframeCreated = false;
 	this._needExecute = false;

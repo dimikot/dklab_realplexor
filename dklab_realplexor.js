@@ -1,4 +1,4 @@
-// Constructor. 
+// Constructor.
 // Create new Dklab_Realplexor object.
 function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 {
@@ -7,7 +7,7 @@ function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 
 	// Detect current page hostname.
 	var host = document.location.host;
-	
+
 	// Assign initial properties.
 	if (!this.constructor._registry) this.constructor._registry = {}; // all objects registry
 	this.version = VERSION;
@@ -16,7 +16,7 @@ function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 	this._namespace = namespace;
 	this._login = null;
 	this._iframeId = "mpl" + (new Date().getTime());
-	this._iframeTag = 
+	this._iframeTag =
 		'<iframe'
 		+ ' id="' + this._iframeId + '"'
 		+ ' onload="' + 'Dklab_Realplexor' + '._iframeLoaded(&quot;' + this._iframeId + '&quot;)"'
@@ -26,30 +26,30 @@ function Dklab_Realplexor(fullUrl, namespace, viaDocumentWrite)
 	this._iframeCreated = false;
 	this._needExecute = false;
 	this._executeTimer = null;
-	
+
 	// Register this object in the registry (for IFRAME onload callback).
 	this.constructor._registry[this._iframeId] = this;
-	
+
 	// Validate realplexor URL.
-	if (!fullUrl.match(/^\w+:\/\/([^/]+)/)) {
+	if (!fullUrl.match(/^\w+:\/\/([^:/]+)/)) {
 		throw 'Dklab_Realplexor constructor argument must be fully-qualified URL, ' + fullUrl + ' given.';
 	}
 	var mHost = RegExp.$1;
 	if (mHost != host && mHost.lastIndexOf("." + host) != mHost.length - host.length - 1) {
 		throw 'Due to the standard XMLHttpRequest security policy, hostname in URL passed to Dklab_Realplexor (' + mHost + ') must be equals to the current host (' + host + ') or be its direct sub-domain.';
-	} 
-	
+	}
+
 	// Create IFRAME if requested.
 	if (viaDocumentWrite) {
 		document.write(this._iframeTag);
 		this._iframeCreated = true;
 	}
-	
+
 	// Allow realplexor's IFRAME to access outer window.
-	document.domain = host;	
+	document.domain = host;
 }
 
-// Static function. 
+// Static function.
 // Called when a realplexor iframe is loaded.
 Dklab_Realplexor._iframeLoaded = function(id)
 {
@@ -90,7 +90,7 @@ Dklab_Realplexor.prototype.subscribe = function(id, callback) {
 }
 
 // Unsubscribe a callback from the specified ID.
-// You do not need to reconnect to the server (see execute()) 
+// You do not need to reconnect to the server (see execute())
 // to stop calling of this callback.
 Dklab_Realplexor.prototype.unsubscribe = function(id, callback) {
 	if (!this._map[id]) return this;
@@ -118,7 +118,7 @@ Dklab_Realplexor.prototype.execute = function() {
 		document.body.appendChild(div);
 		this._iframeCreated = true;
 	}
-	
+
 	// Check if the realplexor is ready (if not, schedule later execution).
 	if (this._executeTimer) {
 		clearTimeout(this._executeTimer);
@@ -129,11 +129,11 @@ Dklab_Realplexor.prototype.execute = function() {
 		this._executeTimer = setTimeout(function() { th.execute() }, 30);
 		return;
 	}
-	
+
 	// Realplexor loader is ready, run it.
 	this._realplexor.execute(
-		this._map, 
-		this.constructor._callAndReturnException, 
+		this._map,
+		this.constructor._callAndReturnException,
 		(this._login != null? this._login + "_" : "") + (this._namespace != null? this._namespace : "")
 	);
 }

@@ -30,7 +30,7 @@ DEBUG="-O3"
 export INCLUDE=$INCLUDE:libev
 export LIB=$INCLUDE:libev/.libs
 
-rm -f ../dklab_realplexor 2>/dev/null
+rm -f ../../dklab_realplexor 2>/dev/null
 $GCC dklab_realplexor.cpp \
     $DEBUG -Wfatal-errors -Wall -Werror \
     -pthread -lcrypt -lboost_filesystem -lboost_system -lboost_regex -lev \

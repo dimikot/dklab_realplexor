@@ -30,7 +30,8 @@ sub time_hi_res {
 # Rerun the script unlimited.
 sub rerun_unlimited {
 	if (($ARGV[0]||'') ne "-") {
-		my $cmd = "/bin/sh -c 'ulimit -n 1048576; exec \"$^X\" \"$0\" - " . join(" ", map { '"' . $_ . '"' } @ARGV) . "'";
+		my $ulim = "$^O" eq "darwin" ? "" : "ulimit -n 1048576; ";
+		my $cmd = "/bin/sh -c '$ulim exec \"$^X\" \"$0\" - " . join(" ", map { '"' . $_ . '"' } @ARGV) . "'";
 		exec($cmd) or die "Cannot exec $cmd: $!\n";
 	} else {
 		shift @ARGV;
@@ -40,7 +41,8 @@ sub rerun_unlimited {
 # Returns amount of used memory by pid (in megabytes).
 sub get_memory_usage {
 	my ($pid) = @_;
-	my $mem = `ps -p $pid -o rss --no-headers`;
+	my $h = "$^O" eq "darwin" ? " | awk 'NR>1'" : "--no-headers";
+	my $mem = `ps -p $pid -o rss $h`;
 	return 0 if !$mem;
 	$mem =~ s/\s+//sg;
 	return $mem / 1024;

@@ -46,7 +46,14 @@ public:
     // Returns amount of used memory by pid (in megabytes).
     static double get_memory_usage(pid_t pid)
     {
-        string mem = backtick("ps -p " + lexical_cast<string>(pid) + " -o rss --no-headers");
+        string mem = backtick(
+            "ps -p " + lexical_cast<string>(pid) + " -o rss "
+#ifdef __APPLE__
+    "| awk 'NR>1'"
+#else
+    "--no-headers"
+#endif
+        );
         mem = regex_replace(mem, regex("\\s+"), "");
         if (mem == "") return 0;
         return lexical_cast<double>(mem) / 1024;

@@ -41,7 +41,7 @@ sub rerun_unlimited {
 # Returns amount of used memory by pid (in megabytes).
 sub get_memory_usage {
 	my ($pid) = @_;
-	my $h = "$^O" eq "darwin" ? " | awk 'NR>1'" : "--no-headers";
+	my $h = "$^O" =~ /^freebsd|darwin$/ ? " | awk 'NR>1'" : "--no-headers";
 	my $mem = `ps -p $pid -o rss $h`;
 	return 0 if !$mem;
 	$mem =~ s/\s+//sg;

@@ -18,7 +18,7 @@ class Dklab_Realplexor
 	 *
 	 * @param string $host        Host of IN line.
 	 * @param string $port        Port of IN line (if 443, SSL is used).
-	 * @param strinf $namespace   Namespace to use. 
+	 * @param string $namespace   Namespace to use. 
 	 * @param string $identifier  Use this "identifier" marker instead of the default one.
 	 */
 	public function __construct($host, $port, $namespace = null, $identifier = "identifier")

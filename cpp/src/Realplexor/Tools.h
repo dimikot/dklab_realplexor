@@ -11,7 +11,7 @@ public:
     // of this function always return different time, second > first.
     static cursor_t time_hi_res()
     {
-        cursor_t time = ev::now();
+        cursor_t time = ev::now(EV_DEFAULT);
         static int time_counter = 0;
         const int cycle = 1000;
         time_counter++;

@@ -236,7 +236,6 @@ class Dklab_Realplexor
 			}
 			if (!@stream_socket_shutdown($f, STREAM_SHUT_WR)) {
 				throw new Dklab_Realplexor_Exception($php_errormsg);
-				break;
 			}
 			$result = @stream_get_contents($f);
 			if ($result === false) {

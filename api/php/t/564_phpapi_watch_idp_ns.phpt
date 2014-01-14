@@ -7,24 +7,24 @@ $NAMESPACE = "ns_";
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=5:ns_demo_abc
-	aaa
+    identifier=5:ns_demo_abc
+    aaa
 ");
 disconnect_wait();
 send_wait("
-	identifier=6:def
-	aaa
+    identifier=6:def
+    aaa
 ");
 disconnect_wait();
 send_wait("
-	identifier=7:ns_ghi
-	aaa
+    identifier=7:ns_ghi
+    aaa
 ");
 disconnect_wait();
 
 $events = $mpl->cmdWatch(1, array("demo_"));
 foreach ($events as $i => $e) {
-	$events[$i]['pos'] = "*";
+    $events[$i]['pos'] = "*";
 }
 printr($events);
 
@@ -41,7 +41,7 @@ WA <-- identifier=7:ns_ghi
 WA <-- aaa
 WA :: Disconnecting.
 array (
-  0 => 
+  0 =>
   array (
     'event' => 'online',
     'pos' => '*',

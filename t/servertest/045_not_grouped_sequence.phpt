@@ -6,21 +6,21 @@ dklab_realplexor: pass 2 data items with greater cursor (not grouped)
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=10:abc
+    identifier=10:abc
 ");
 
 send_in("identifier=15:abc", "
-	aaa
+    aaa
 ");
 
 send_in("identifier=20:abc", "
-	bbb
+    bbb
 ");
 
 recv_wait();
 
 send_wait("
-	identifier=15:abc
+    identifier=15:abc
 ");
 
 recv_wait();
@@ -30,20 +30,20 @@ recv_wait();
 --EXPECT--
 WA <-- identifier=10:abc
 IN <== X-Realplexor: identifier=15:abc
-IN <== 
+IN <==
 IN <== "aaa"
-IN ==> 
+IN ==>
 IN <== X-Realplexor: identifier=20:abc
-IN <== 
+IN <==
 IN <== "bbb"
-IN ==> 
+IN ==>
 WA --> HTTP/1.1 200 OK
 WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "abc": "15" },
@@ -57,8 +57,8 @@ WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "abc": "20" },

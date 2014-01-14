@@ -10,7 +10,7 @@ printr($mpl->cmdWatch(0));
 ?>
 --EXPECT--
 array (
-  0 => 
+  0 =>
   array (
     'event' => 'FAKE',
     'pos' => '10',

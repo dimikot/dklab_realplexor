@@ -7,8 +7,8 @@ $REALPLEXOR_CONF = "non_anonymous.conf";
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=user_abc
-	aaa
+    identifier=user_abc
+    aaa
 ");
 
 $mpl->logon("user", "password");
@@ -25,8 +25,8 @@ WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "user_abc": <cursor> },

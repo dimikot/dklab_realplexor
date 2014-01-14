@@ -6,8 +6,8 @@ dklab_realplexor: PHP API test, JSON mode
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=abc
-	aaa
+    identifier=abc
+    aaa
 ");
 
 $mpl->send(array("abc", "def"), "Test!");
@@ -23,8 +23,8 @@ WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "abc": <cursor> },

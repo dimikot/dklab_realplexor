@@ -5,18 +5,18 @@
 
 <?include "contrib/init.php"?>
 <div id="FILE">
-	<script>
-	execute(function() {
-		substituteResponse([
-			[
-				{ identifier: '10:AAA', data: "'aaa'" },
-			],
-		]);
-		realplexor.execute();
-		JsTest.write("OK");
-		setTimeout(function() { JsTest.analyze() }, 700);
-	});
-	</script>
+    <script>
+    execute(function() {
+        substituteResponse([
+            [
+                { identifier: '10:AAA', data: "'aaa'" },
+            ],
+        ]);
+        realplexor.execute();
+        JsTest.write("OK");
+        setTimeout(function() { JsTest.analyze() }, 700);
+    });
+    </script>
 </div>
 
 

@@ -5,19 +5,19 @@
 
 <?include "contrib/init.php"?>
 <div id="FILE">
-	<script>
-	execute(function() {
-		substituteResponse([]);
-		var callback = function(r, id) { 
-			JsTest.write("Callback called for ID=" + id + ": \n" + r + "\n\n"); 
-		}
-		for (var i = 0; i < 100; i++) {
-			realplexor.subscribe('AAAAAxxxxxAAAAAxxxxxAAAAAxxxxx' + i, callback);
-		}
-		realplexor.execute();
-		setTimeout(function() { JsTest.analyze() }, 700);
-	});
-	</script>
+    <script>
+    execute(function() {
+        substituteResponse([]);
+        var callback = function(r, id) {
+            JsTest.write("Callback called for ID=" + id + ": \n" + r + "\n\n");
+        }
+        for (var i = 0; i < 100; i++) {
+            realplexor.subscribe('AAAAAxxxxxAAAAAxxxxxAAAAAxxxxx' + i, callback);
+        }
+        realplexor.execute();
+        setTimeout(function() { JsTest.analyze() }, 700);
+    });
+    </script>
 </div>
 
 

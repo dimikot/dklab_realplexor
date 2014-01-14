@@ -6,20 +6,20 @@
 <script type="text/javascript" src="static/jquery.min.js"></script>
 <script>
 $(".send").live("click", function() {
-	var ids = $.map($('.identifier', this.form), function(e) { return e.value? e.value : null });
-	var message = this.form.message.value;
-	var repeat = this.form.repeat.value;
-	var loader = $('img', this.form);
-	loader.show();
-	$.ajax({
-		type: "POST",
-		url: "ajax_post.php", 
-		data: { ids: ids.join(","), message: message, repeat: repeat }, 
-		complete: function(xhr, status) { 
-			loader.hide();
-			if (xhr.responseText) alert("Error: " + xhr.responseText); 
-		}
-	});
+    var ids = $.map($('.identifier', this.form), function(e) { return e.value? e.value : null });
+    var message = this.form.message.value;
+    var repeat = this.form.repeat.value;
+    var loader = $('img', this.form);
+    loader.show();
+    $.ajax({
+        type: "POST",
+        url: "ajax_post.php",
+        data: { ids: ids.join(","), message: message, repeat: repeat },
+        complete: function(xhr, status) {
+            loader.hide();
+            if (xhr.responseText) alert("Error: " + xhr.responseText);
+        }
+    });
 });
 </script>
 </head>
@@ -39,26 +39,26 @@ When you press a button, your message is sent via server-side dklab_realplexor e
 <form onsubmit="return false" class="form">
 <table>
 <tr>
-	<td>Channel to send to:</td>
-	<td>
-		<input type="text" class="identifier" value="<?=$id?>" />
-	</td>
+    <td>Channel to send to:</td>
+    <td>
+        <input type="text" class="identifier" value="<?=$id?>" />
+    </td>
 </tr>
 <tr>
-	<td>Message:</td>
-	<td><input type="text" name="message" value="Hello." /></td>
+    <td>Message:</td>
+    <td><input type="text" name="message" value="Hello." /></td>
 </tr>
 <tr>
-	<td colspan="2">
-		<input type="button" value="Send message" class="send" />
-		<select name="repeat">
-		<?for ($i = 1; $i <= 5; $i++) {?>
-			<option value="<?=$i?>"><?=$i?></option>
-		<?}?>
-		</select>
-		times
-		<img src="static/loading_green.gif" style="display:none">
-	</td>
+    <td colspan="2">
+        <input type="button" value="Send message" class="send" />
+        <select name="repeat">
+        <?for ($i = 1; $i <= 5; $i++) {?>
+            <option value="<?=$i?>"><?=$i?></option>
+        <?}?>
+        </select>
+        times
+        <img src="static/loading_green.gif" style="display:none">
+    </td>
 </tr>
 </table>
 </form>

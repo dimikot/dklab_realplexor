@@ -7,14 +7,14 @@ $REALPLEXOR_CONF = "small_offline_timeout.conf";
 require dirname(__FILE__) . '/init.php';
 
 send_in("identifier=2:abc,2:def", "
-	aaa
+    aaa
 ");
 send_in("identifier=2:abc,2:def", "
-	bbb
+    bbb
 ");
 
 send_wait("
-	identifier=1:abc,1:def
+    identifier=1:abc,1:def
 ");
 recv_wait();
 expect('/is now offline/');
@@ -22,21 +22,21 @@ expect('/is now offline/');
 ?>
 --EXPECT--
 IN <== X-Realplexor: identifier=2:abc,2:def
-IN <== 
+IN <==
 IN <== "aaa"
-IN ==> 
+IN ==>
 IN <== X-Realplexor: identifier=2:abc,2:def
-IN <== 
+IN <==
 IN <== "bbb"
-IN ==> 
+IN ==>
 WA <-- identifier=1:abc,1:def
 WA --> HTTP/1.1 200 OK
 WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "abc": "2", "def": "2" },

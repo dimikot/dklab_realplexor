@@ -7,15 +7,15 @@ $REALPLEXOR_CONF = "non_anonymous.conf";
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=user_abc
-	aaa
+    identifier=user_abc
+    aaa
 ");
 
 $mpl->logon("unknown", "password");
 try {
-	$mpl->send(array("abc", "def"), "Test!");
+    $mpl->send(array("abc", "def"), "Test!");
 } catch (Exception $e) {
-	echo $e->getMessage();
+    echo $e->getMessage();
 }
 
 ?>

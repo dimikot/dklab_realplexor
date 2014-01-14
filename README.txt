@@ -1,14 +1,36 @@
-Dklab Realplexor v1.40: Comet server which handles 1000000+ parallel browser connections.
-Author: Dmitry Koterov, dkLab (C)
-Home page: http://dklab.ru/lib/dklab_realplexor/
-Changelog: http://github.com/DmitryKoterov/dklab_realplexor/commits/master/
+#@
+#@ Dklab Realplexor: Comet server which handles 1000000+ parallel browser connections
+#@ Author: Dmitry Koterov, dkLab (C)
+#@ GitHub: http://github.com/DmitryKoterov/
+#@ Homepage: http://dklab.ru/lib/dklab_realplexor/
+#@
+
+BUILD A BINARY FROM C++ SOURCES
+-------------------------------
+
+Realplexor comes in two versions with exactly same functions and even exactly
+same (shared) smoke tests code:
+
+1. Perl version: treated as a prototype and development/debugging playground.
+   It's quite slow and is not recommended in production.
+2. C++ version: fast, but you should build it by yourself from sources
+   (it's quite easy in Ubuntu 12.04), see cpp/ directory.
+
+When you build a binary version of Realplexor, the binary is put to the current
+directory; it will be used instead of Perl version automatically.
 
 
 INSTALLATION ON LINUX
 ---------------------
 
-0. First of all, run ./dklab_realplexor.pl manually and check that all
-   needed libraries are installed. If not, compile & install them:
+Note that Realplexor works on Linux only, other OS (Windows, MacOS, FreeBSD)
+are not known to be supported.
+
+0. Build a binary file ./dklab_realplexor from C++ source code if you can
+   (see cpp/ directory for instructions).
+
+1. If you decide to use a Perl version, run ./dklab_realplexor.pl manually
+   and check that all needed libraries are installed. If not, install them:
    - For RHEL (RedHat, CentOS):
      # yum install gcc
      # perl -MCPAN -e "install EV"
@@ -16,12 +38,12 @@ INSTALLATION ON LINUX
      # apt-get install gcc
      # perl -MCPAN -e "install EV"
 
-1. Copy Realplexor to /opt/dklab_realplexor (or you may create a symlink).
+2. Copy Realplexor to /opt/dklab_realplexor (or you may create a symlink).
    # cp -a . /opt/dklab_realplexor
      - or -
    # ln -s `pwd` /opt/dklab_realplexor
 
-2. Create /etc/dklab_realplexor.conf if you need a custom configuration.
+3. Create /etc/dklab_realplexor.conf if you need a custom configuration.
    (You may create a symlink instead of creating the file.)
 
    # cat > /etc/dklab_realplexor.conf
@@ -32,12 +54,12 @@ INSTALLATION ON LINUX
 
      - or -
 
-   # ln -s /path/to/your/config.conf /etc/dklab_realplexor.conf 
-   
-3. Use bundled init-script to start Realplexor as a Linux service:
+   # ln -s /path/to/your/config.conf /etc/dklab_realplexor.conf
+
+4. Use bundled init-script to start Realplexor as a Linux service:
    # ln -s /opt/dklab_realplexor/dklab_realplexor.init /etc/init.d/dklab_realplexor
-   
-4. Tell your system to start Realplexor at boot:
+
+5. Tell your system to start Realplexor at boot:
    - For RHEL (RedHat, CentOS):
      # chkconfig --add dklab_realplexor
      # chkconfig dklab_realplexor on
@@ -75,7 +97,7 @@ data_to_send
 
 connected_fhs
   Number of IDs which are listened by at least one client.
-  
+
 online_timers
   Number of "online" client identifiers. Client is treated as online if:
   - it has an active connection;
@@ -94,6 +116,11 @@ events
 CHANGELOG
 ---------
 
+* Dklab Realplexor 2014-01-14: v1.41
+  - [MIN] Brushed up C++ version, Ubuntu 12.04 build instructions.
+  - [MIN] Banner comments added to source files.
+  - [MIN] Tabs to spaces.
+
 * Dklab Realplexor 2011-07-28: v1.40
   - [NEW] Python API added (experimental)
   - [NEW] Added missed "return this" for chained JS calls.
@@ -105,20 +132,20 @@ CHANGELOG
 * Dklab Realplexor 2010-08-11: v1.32
   - [SPD] When empty HTTP body is passed to IN connection, it is now ignored, no warnings generated.
   - [SPD] Remove old data from channels BEFORE data processing/sending.
-  - [BUG] Use print instead of syswrite, because for large amount of data syswrite sometimes 
+  - [BUG] Use print instead of syswrite, because for large amount of data syswrite sometimes
     returns before all this data is transmitted.
 
 * Dklab Realplexor 2010-04-16: v1.31
-  - [BUG] Perl does not call flush() automatically before socket shutdown(). It 
-    sometimes (unstable!) causes unexpected SIGPIPEs and data loss. Fixed: now flush() 
+  - [BUG] Perl does not call flush() automatically before socket shutdown(). It
+    sometimes (unstable!) causes unexpected SIGPIPEs and data loss. Fixed: now flush()
     is called manually.
   - [BUG] STATS command is not processed twice anymore.
-  - [NEW] Ability to limit memory usage and auto-restart the daemon if it 
+  - [NEW] Ability to limit memory usage and auto-restart the daemon if it
     consumes too much memory. (Note that unsent data is lost during this restart.)
   - [NEW] PHP API: cmdOnlineWithCounters(): for each online ID also returns
     the number of browsers connected just now (it is NOT a "number of online
     users who listen this channel", but its approximation).
-  - [BUG] Minor fixes in clean_old_data_for_id (bug is not reproduced, 
+  - [BUG] Minor fixes in clean_old_data_for_id (bug is not reproduced,
     but now surrounding code is better).
   - [NEW] Visibility:hidden for IFRAME. It is good when BODY has relative position.
   - [BUG] Allow to pass a scalar to 2nd parameter of cmdWatch($fromPos, $idPrefixes).

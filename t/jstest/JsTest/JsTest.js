@@ -9,13 +9,13 @@ var JsTest = {
     analyzed: false,
     maxTimeout: 6000,
     maxTimeoutHandler: null,
-    
+
     getDiv: function(name) {
         var div = document.getElementById(name);
         if (!div) throw new Error('No element with id=' + name + '!');
         return div;
     },
-    
+
     report: function(result) {
         this.analyzed = true;
         var testDiv = this.getDiv('TEST');
@@ -25,7 +25,7 @@ var JsTest = {
             parent.JsTestIterator.report(result);
         }
     },
-    
+
     write: function(text) {
         var fileDiv = this.getDiv('FILE');
         if (!fileDiv.isResult) {
@@ -46,15 +46,15 @@ var JsTest = {
         // &nbsp; before <br> - for IE (it eats multiple <br>'s inside <pre>).
         text = text.replace(/ /g, '&nbsp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\r?\n/g, '&nbsp;<br>');
         fileDiv.innerHTML += text;
-        
+
         // Reset timeout on each write.
         this.setMaxTimeout(this.maxTimeout);
     },
-    
+
     skip: function() {
         this.report('skip');
     },
-    
+
     analyze: function() {
         if (this.analyzed) return;
         this.analyzed = true;
@@ -69,14 +69,14 @@ var JsTest = {
             this.report('success');
         }
     },
-    
+
     setMaxTimeout: function(maxTimeout) {
-    	var old = this.maxTimeout;
+        var old = this.maxTimeout;
         this.maxTimeout = maxTimeout;
         this.initialize();
         return old;
     },
-    
+
     initialize: function() {
         // Auto-analyze a result on timeout.
         this.analyzed = false;
@@ -86,14 +86,14 @@ var JsTest = {
         // IE5 crashed when we use a closure in setTimeout()!!! So - use string.
         this.maxTimeoutHandler = setTimeout("JsTest.analyze()", JsTest.maxTimeout);
     },
-    
+
     removeSpaces: function(s) {
-    	// Safari bug work-arount: damned Safari does not mass-remove \x00A0 by regexps! :-(
-    	var old = null;
-    	while (old != s) {
-    		old = s;
-    		s = s.replace('\u00A0', '').replace("\xa0", "");
-    	}
-    	return s.replace(/\s+|&nbsp;|<br\s*\/?>/gi, '');
+        // Safari bug work-arount: damned Safari does not mass-remove \x00A0 by regexps! :-(
+        var old = null;
+        while (old != s) {
+            old = s;
+            s = s.replace('\u00A0', '').replace("\xa0", "");
+        }
+        return s.replace(/\s+|&nbsp;|<br\s*\/?>/gi, '');
     }
 }

@@ -4,29 +4,29 @@
 
 <?include "contrib/init.php"?>
 <div id="FILE">
-	<script>
-	execute(function() {
-		substituteResponse([
-			[
-				{ identifier: '10:AAA,10:BBB', data: "'aaa'" },
-			],
-		]);
-		var callback = function(r, id) { 
-			JsTest.write("Callback called for ID=" + id + ": \n" + r + "\n\n"); 
-			realplexor.execute();
-		};
-		realplexor.subscribe('AAA', callback);
-		realplexor.execute();
-		setTimeout(function() { JsTest.analyze() }, 700);
-	});
-	</script>
+    <script>
+    execute(function() {
+        substituteResponse([
+            [
+                { identifier: '10:AAA,10:BBB', data: "'aaa'" },
+            ],
+        ]);
+        var callback = function(r, id) {
+            JsTest.write("Callback called for ID=" + id + ": \n" + r + "\n\n");
+            realplexor.execute();
+        };
+        realplexor.subscribe('AAA', callback);
+        realplexor.execute();
+        setTimeout(function() { JsTest.analyze() }, 700);
+    });
+    </script>
 </div>
 
 
 <pre id="EXPECT">
-Request: /?identifier=AAA 
-Callback called for ID=AAA:  
-aaa 
+Request: /?identifier=AAA
+Callback called for ID=AAA:
+aaa
 
-Request: /?identifier=10:AAA 
+Request: /?identifier=10:AAA
 </pre>

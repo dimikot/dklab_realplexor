@@ -6,8 +6,8 @@ dklab_realplexor: PHP API test, online IDs with online browsers counters
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=5:abc,10:def,6:abc
-	aaa
+    identifier=5:abc,10:def,6:abc
+    aaa
 ");
 
 printr($mpl->cmdOnlineWithCounters());

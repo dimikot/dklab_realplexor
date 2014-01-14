@@ -8,7 +8,7 @@ $REALPLEXOR_CONF = "non_anonymous.conf";
 require dirname(__FILE__) . '/init.php';
 
 send_in("identifier=user:password@abc", "
-	aaa
+    aaa
 ");
 
 ?>
@@ -24,7 +24,7 @@ send_in("identifier=user:password@abc", "
 # Switching current user to unprivileged "nobody"
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 IN <== X-Realplexor: identifier=user:password@abc
-IN <== 
+IN <==
 IN <== "aaa"
 # IN: DEBUG: connection opened
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]

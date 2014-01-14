@@ -7,15 +7,15 @@ $REALPLEXOR_CONF = "small_wait_timeout.conf";
 require dirname(__FILE__) . '/init.php';
 
 send_in("identifier=5:abc", "
-	aaa
+    aaa
 ");
 
 send_wait("
-	identifier=10:abc
+    identifier=10:abc
 ");
 
 send_in("identifier=6:abc", "
-	aaa
+    aaa
 ");
 
 recv_wait();
@@ -24,14 +24,14 @@ recv_wait();
 ?>
 --EXPECT--
 IN <== X-Realplexor: identifier=5:abc
-IN <== 
+IN <==
 IN <== "aaa"
-IN ==> 
+IN ==>
 WA <-- identifier=10:abc
 IN <== X-Realplexor: identifier=6:abc
-IN <== 
+IN <==
 IN <== "aaa"
-IN ==> 
+IN ==>
 WA --> HTTP/1.1 200 OK
 WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate

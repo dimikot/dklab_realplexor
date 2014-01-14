@@ -6,8 +6,8 @@ dklab_realplexor: PHP API test, online IDs
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=5:abc,10:def
-	aaa
+    identifier=5:abc,10:def
+    aaa
 ");
 
 printr($mpl->cmdOnline());

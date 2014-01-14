@@ -6,23 +6,23 @@ dklab_realplexor: multiple items with greater cursor with result ordering
 require dirname(__FILE__) . '/init.php';
 
 send_in("identifier=20:abc", "
-	ccc
+    ccc
 ");
 
 send_in("identifier=11:abc", "
-	aaa
+    aaa
 ");
 
 send_in("identifier=18:abc", "
-	ddd
+    ddd
 ");
 
 send_in("identifier=15:abc", "
-	bbb
+    bbb
 ");
 
 send_wait("
-	identifier=10:abc
+    identifier=10:abc
 ");
 recv_wait();
 
@@ -30,29 +30,29 @@ recv_wait();
 ?>
 --EXPECT--
 IN <== X-Realplexor: identifier=20:abc
-IN <== 
+IN <==
 IN <== "ccc"
-IN ==> 
+IN ==>
 IN <== X-Realplexor: identifier=11:abc
-IN <== 
+IN <==
 IN <== "aaa"
-IN ==> 
+IN ==>
 IN <== X-Realplexor: identifier=18:abc
-IN <== 
+IN <==
 IN <== "ddd"
-IN ==> 
+IN ==>
 IN <== X-Realplexor: identifier=15:abc
-IN <== 
+IN <==
 IN <== "bbb"
-IN ==> 
+IN ==>
 WA <-- identifier=10:abc
 WA --> HTTP/1.1 200 OK
 WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "abc": "11" },

@@ -8,14 +8,14 @@ $REALPLEXOR_CONF = "iframe_stub.conf";
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=IFRAME
-	aaa
+    identifier=IFRAME
+    aaa
 ");
 recv_wait();
 
 send_wait("
-	identifier=IFRAME
-	aaa
+    identifier=IFRAME
+    aaa
 ");
 recv_wait();
 
@@ -47,7 +47,7 @@ WA --> Content-Type: text/html; charset=utf-8
 WA --> Last-Modified: ***
 WA --> Expires: ***
 WA --> Cache-Control: public
-WA --> 
+WA -->
 WA --> IFRAME stub: [IFRAME].
 WA :: Disconnecting.
 WA <-- identifier=IFRAME
@@ -66,6 +66,6 @@ WA --> Content-Type: text/html; charset=utf-8
 WA --> Last-Modified: ***
 WA --> Expires: ***
 WA --> Cache-Control: public
-WA --> 
+WA -->
 WA --> IFRAME stub: [IFRAME].
 WA :: Disconnecting.

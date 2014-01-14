@@ -6,10 +6,10 @@ dklab_realplexor: client reads only his subscribed IDs
 require dirname(__FILE__) . '/init.php';
 
 send_in("identifier=20:abc,30:def,40:ghi", "
-	ccc
+    ccc
 ");
 send_wait("
-	identifier=10:abc,20:def
+    identifier=10:abc,20:def
 ");
 recv_wait();
 
@@ -17,17 +17,17 @@ recv_wait();
 ?>
 --EXPECT--
 IN <== X-Realplexor: identifier=20:abc,30:def,40:ghi
-IN <== 
+IN <==
 IN <== "ccc"
-IN ==> 
+IN ==>
 WA <-- identifier=10:abc,20:def
 WA --> HTTP/1.1 200 OK
 WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "abc": "20", "def": "30" },

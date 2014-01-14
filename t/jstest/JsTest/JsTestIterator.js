@@ -14,7 +14,7 @@ var JsTestIterator = {
     stopOnError: false,  // if true, do not run the next test on error
     onResult: null,      // callback: called when all tests are finished (with text message)
     addUrl: '',          // additional string added to each of the URLs
-    
+
     // Called from child JsTest.
     report: function(result) {
         var bgr = {
@@ -29,9 +29,9 @@ var JsTestIterator = {
             // Skip next tests on error.
             return;
         }
-        // Run the next test.        
+        // Run the next test.
         var th = this;
-        var closure = function() { 
+        var closure = function() {
             th.curTest++;
             var name = th.tests[th.curTest];
             if (!name) {
@@ -49,7 +49,7 @@ var JsTestIterator = {
                 if (th.onResult) th.onResult(text);
             } else {
                 // Run the next test.
-                th.iframe.window.location = (name 
+                th.iframe.window.location = (name
                     + (name.indexOf('?') >= 0? '&' : '?') + new Date().getTime()
                     + (th.addUrl? '&' + th.addUrl : '')
                 );
@@ -57,7 +57,7 @@ var JsTestIterator = {
         };
         setTimeout(closure, th.nextDt);
     },
-    
+
     // Runs a test sequence.
     run: function(iframe, tests, onResult) {
         this.iframe = iframe;

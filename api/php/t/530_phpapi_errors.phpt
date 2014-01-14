@@ -6,24 +6,24 @@ dklab_realplexor: PHP API test, errors
 require dirname(__FILE__) . '/init.php';
 
 try {
-	$mpl = new Dklab_Realplexor("127.0.0.1", "10011");
-	$mpl->send(array("abc"), "Test!");
+    $mpl = new Dklab_Realplexor("127.0.0.1", "10011");
+    $mpl->send(array("abc"), "Test!");
 } catch (Exception $e) {
-	echo $e->getMessage() . "\n";
+    echo $e->getMessage() . "\n";
 }
 
 try {
-	$mpl = new Dklab_Realplexor("127.0.0.1", "10011");
-	$mpl->send(array("no-num"), "Test!");
+    $mpl = new Dklab_Realplexor("127.0.0.1", "10011");
+    $mpl->send(array("no-num"), "Test!");
 } catch (Exception $e) {
-	echo $e->getMessage() . "\n";
+    echo $e->getMessage() . "\n";
 }
 
 try {
-	$mpl = new Dklab_Realplexor("127.0.0.1", "10011");
-	$mpl->send(array("abc" => "aaa"), "Test!");
+    $mpl = new Dklab_Realplexor("127.0.0.1", "10011");
+    $mpl->send(array("abc" => "aaa"), "Test!");
 } catch (Exception $e) {
-	echo $e->getMessage() . "\n";
+    echo $e->getMessage() . "\n";
 }
 
 ?>

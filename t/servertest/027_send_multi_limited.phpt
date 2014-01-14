@@ -7,7 +7,7 @@ $VERBOSE = 1;
 require dirname(__FILE__) . '/init.php';
 
 send_in("identifier=12345.678:abc,def,hgi,*aa,1234:*bb", "
-	aaa
+    aaa
 ");
 
 ?>
@@ -21,7 +21,7 @@ send_in("identifier=12345.678:abc,def,hgi,*aa,1234:*bb", "
 # Switching current user to unprivileged "nobody"
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]
 IN <== X-Realplexor: identifier=12345.678:abc,def,hgi,*aa,1234:*bb
-IN <== 
+IN <==
 IN <== "aaa"
 # IN: DEBUG: connection opened
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]

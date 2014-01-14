@@ -7,8 +7,8 @@ $NAMESPACE = "ns_";
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=5:ns_A_abc,10:def,20:ns_B_ghi
-	aaa
+    identifier=5:ns_A_abc,10:def,20:ns_B_ghi
+    aaa
 ");
 
 printr($mpl->cmdOnline(array("A_", "B_")));

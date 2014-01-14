@@ -1,0 +1,5 @@
+Dklab Realplexor: Comet server which handles 1000000+ parallel browser connections
+Author: Dmitry Koterov, dkLab (C)
+License: GPL 2.0
+GitHub: http://github.com/DmitryKoterov/
+Homepage: http://dklab.ru/lib/dklab_realplexor/

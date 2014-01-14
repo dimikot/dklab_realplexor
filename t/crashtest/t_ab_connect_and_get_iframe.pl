@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-use lib '../..';
+use lib '../../perl';
 use Realplexor::Tools;
 Realplexor::Tools::rerun_unlimited();
 

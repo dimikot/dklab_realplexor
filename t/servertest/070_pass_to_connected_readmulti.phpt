@@ -6,10 +6,10 @@ dklab_realplexor: data is passed to connected client with multi-ids
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=abc,def
+    identifier=abc,def
 ");
 send_in("identifier=def", "
-	aaa
+    aaa
 ");
 recv_wait();
 
@@ -17,16 +17,16 @@ recv_wait();
 --EXPECT--
 WA <-- identifier=abc,def
 IN <== X-Realplexor: identifier=def
-IN <== 
+IN <==
 IN <== "aaa"
-IN ==> 
+IN ==>
 WA --> HTTP/1.1 200 OK
 WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "def": <cursor> },

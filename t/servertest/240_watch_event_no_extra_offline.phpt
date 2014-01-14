@@ -8,15 +8,15 @@ require dirname(__FILE__) . '/init.php';
 
 echo "\n## First client connected and had not disconnected.\n";
 send_wait("
-	identifier=1:abc
-	aaa
+    identifier=1:abc
+    aaa
 ");
 $socket1 = $WAIT_SOCK;
 
 echo "\n## Second client with the same ID connected+disconnected after 2 seconds.\n";
 send_wait("
-	identifier=2:abc
-	bbb
+    identifier=2:abc
+    bbb
 ");
 disconnect_wait();
 
@@ -52,7 +52,7 @@ IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
 IN ==> Content-Length: 14
-IN ==> 
+IN ==>
 IN ==> online *:abc
 
 ## Now we disconnect the first connection.
@@ -63,7 +63,7 @@ IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
 IN ==> Content-Length: 14
-IN ==> 
+IN ==>
 IN ==> online *:abc
 
 ## In 2 seconds we should get OFFLINE message.
@@ -71,6 +71,6 @@ IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
 IN ==> Content-Length: 15
-IN ==> 
+IN ==>
 IN ==> offline *:abc
 #   [pairs_by_fhs=0 data_to_send=0 connected_fhs=0 online_timers=0 cleanup_timers=0 events=*]

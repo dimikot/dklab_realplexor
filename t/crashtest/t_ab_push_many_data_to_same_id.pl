@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-use lib '../..';
+use lib '../../perl';
 use Realplexor::Tools;
 Realplexor::Tools::rerun_unlimited();
 use IO::Socket;
@@ -14,16 +14,16 @@ $| = 1;
 print "Press Enter to start sending...\n"; scalar <STDIN>;
 
 for (my $i = 0; $i < $num_datas; $i++) {
-	my $sock = IO::Socket::INET->new(
-		PeerAddr => '127.0.0.1',
-		PeerPort => '10010'
-	);
-	if (!$sock) {
-		die("$@\n\n");
-	}
-	print $sock "identifier=$cursor:$id\n\n";
-	print $sock join("", map { "x" } (1..$data_len));
-	print ".";
+    my $sock = IO::Socket::INET->new(
+        PeerAddr => '127.0.0.1',
+        PeerPort => '10010'
+    );
+    if (!$sock) {
+        die("$@\n\n");
+    }
+    print $sock "identifier=$cursor:$id\n\n";
+    print $sock join("", map { "x" } (1..$data_len));
+    print ".";
 }
 print "\nDone. Press Enter to run ab...\n";
 scalar(<STDIN>);

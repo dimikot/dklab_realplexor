@@ -12,16 +12,16 @@ $mpl->send(array("abc" => 11, "def" => 11), "private data", array("myid1", "myid
 
 echo "Prints only public data\n";
 send_wait("
-	identifier=5:ns_abc
-	aaa
+    identifier=5:ns_abc
+    aaa
 ");
 recv_wait();
 
 
 echo "Prints public and private data\n";
 send_wait("
-	identifier=5:ns_abc,666:ns_myid1
-	aaa
+    identifier=5:ns_abc,666:ns_myid1
+    aaa
 ");
 recv_wait();
 
@@ -37,8 +37,8 @@ WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "ns_abc": "10" },
@@ -54,8 +54,8 @@ WA --> Connection: close
 WA --> Cache-Control: no-store, no-cache, must-revalidate
 WA --> Expires: ***
 WA --> Content-Type: text/javascript; charset=utf-8
-WA --> 
-WA -->  
+WA -->
+WA -->
 WA --> [
 WA -->   {
 WA -->     "ids": { "ns_abc": "10" },

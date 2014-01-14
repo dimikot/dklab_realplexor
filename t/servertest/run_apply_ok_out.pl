@@ -1,5 +1,4 @@
 #!/usr/bin/perl -w
-
 my $file = $ARGV[0];
 die "Usage:\n  $0 file-name.out\n" if !$file || $file !~ /^(.*)\.out$/s;
 

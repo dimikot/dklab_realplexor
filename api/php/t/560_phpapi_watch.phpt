@@ -6,19 +6,19 @@ dklab_realplexor: PHP API test, command "watch"
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=5:abc
-	aaa
+    identifier=5:abc
+    aaa
 ");
 disconnect_wait();
 send_wait("
-	identifier=6:def
-	aaa
+    identifier=6:def
+    aaa
 ");
 disconnect_wait();
 
 $events = $mpl->cmdWatch(1);
 foreach ($events as $i => $e) {
-	$events[$i]['pos'] = "*";
+    $events[$i]['pos'] = "*";
 }
 printr($events);
 
@@ -32,13 +32,13 @@ WA <-- identifier=6:def
 WA <-- aaa
 WA :: Disconnecting.
 array (
-  0 => 
+  0 =>
   array (
     'event' => 'online',
     'pos' => '*',
     'id' => 'abc',
   ),
-  1 => 
+  1 =>
   array (
     'event' => 'online',
     'pos' => '*',

@@ -2,310 +2,310 @@
 <body>
 <script language="JavaScript" type="text/javascript">
 Dklab_Realplexor_Loader = {
-	// Maximum bounce count.
-	JS_MAX_BOUNCES: $JS_MAX_BOUNCES,
-	
-	// Reconnect delay.
-	JS_WAIT_RECONNECT_DELAY: $JS_WAIT_RECONNECT_DELAY,
-	
-	// Realplexor WAIT url parts.
-	JS_WAIT_URI: '$JS_WAIT_URI',
-	
-	// Realplexor normal WAIT timeout (seconds).
-	JS_WAIT_TIMEOUT: $WAIT_TIMEOUT,
-	
-	JS_IDENTIFIER: '$IDENTIFIER',
-	
-	// It debug mode turned on?
-	JS_DEBUG: $JS_DEBUG,
-	
-	// Count of sequential bounces.
-	_bounceCount: 0,
-	
-	// Namespace to use.
-	_namespace: null,
-	
-	// Previous request time.
-	_prevReqTime: null,
-	
-	// Previously used xmlhttp.
-	_lastXmlhttp: null,
-	
-	// Pairs of [cursor, [ callback1, callback2, ... ]] for each ID. 
-	// Callbacks will be called on data ready.
-	_ids: {},
-	
-	// Work-around for stupid IE. Unfortunately IE cannot catch exceptions
-	// thrown from a callback created in a different frame, so we run such
-	// callbacks wrapped by _callAndReturnException function. This
-	// function is passed from the parent frame.
-	_callAndReturnException: null,
-	
-	// Return the parent's document.
-	_doc: function() {
-		return parent.document;
-	},
-	
-	// Create a new XMLHttpRequest object.
-	_getXmlHttp: function() {
-		var xmlhttp;
-		if (typeof XMLHttpRequest != 'undefined') {
-			xmlhttp = new XMLHttpRequest();
-		}
-		if (!xmlhttp) try {
-			xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-		} catch (e) {
-		}
-		if (!xmlhttp) try {
-			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		} catch (e) {
-		}
-		return xmlhttp;
-	},
-	
-	// Log a debug message.
-	_log: function(msg, func) {
-		if (!this.JS_DEBUG) return;
-		if (window.console) {
-			if (!func) func = "log";
-			var multiline = false;
-			if ((""+msg).match(/^([^\r\n]+)\r?\n([\s\S]*)$/)) {
-				var first = RegExp.$1, second = RegExp.$2;
-				if (console.groupCollapsed) {
-					console.groupCollapsed(first);
-					console[func](second + "\n");
-					console.groupEnd();
-				} else {
-					console.info(first);
-					console[func](second + "\n");
-				}
-			} else {
-				console[func](msg);
-			}
-		}
-	},
+    // Maximum bounce count.
+    JS_MAX_BOUNCES: $JS_MAX_BOUNCES,
 
-	// Log an error message.
-	_error: function(prefix, msg) {
-		this._log(prefix, "error");
-		this._log(msg);
-	},
-	
-	// Process a single part.
-	_processPart: function(part) {
-		var errors = 0;
-		
-		// Extract IDs.
-		var pairs = part.ids;
-		if (pairs == null) {
-			throw "Cannot find \"ids\" property within the response part";
-		}
-		
-		// Extract data.
-		var data = part.data;
-		if (data == undefined) {
-			throw "Cannot find \"data\" property within the response part";
-		}
-		
-		// Process parts one after another.
-		for (var id in pairs) if (pairs.hasOwnProperty(id)) {
-			var cursor = pairs[id];
-			// Strip namespace prefix.
-			if (this._namespace != null) {
-				if (id.indexOf(this._namespace) == 0) {
-					id = id.substring(this._namespace.length);
-				}
-			}
-			if (!this._ids[id]) {
-				this._ids[id] = { cursor: null, callbacks: [] };
-			}
-			var item = this._ids[id];
-			item.cursor = cursor; // do not call parseFloat here! else you loose precision
-			for (var j = 0; j < item.callbacks.length; j++) {
-				var e = this._callAndReturnException(item.callbacks[j], [data, id, item.cursor]);
-				if (e) {
-					this._error("Error executing callback #" + j + " for ID " + id + ": " + e, "Data:\n" + data);
-					errors++;
-				}
-			}
-		}
-		return errors;
-	},
+    // Reconnect delay.
+    JS_WAIT_RECONNECT_DELAY: $JS_WAIT_RECONNECT_DELAY,
 
-	// Parse multipart response text and return list of parts.
-	_parseResponseTextIntoParts: function(text) {
-		if (!text.match(/^\s*\[[\s\S]*\]\s*$/i)) {
-			throw "Response is not a complete JSON";
-		}
-		var parts;
-		eval("parts = " + text);
-		return parts;
-	},
-	
-	// Process the response data.
-	_processResponseText: function(text) {
-		// Safary bug: responseText sometimes contain headers+body, not only body!
-		// So cat before the first "[".
-		text = text.replace(/^[\s\S]*?(?=\[)/g, '');
-		this._log("Received response:\n" + text);
-		// Parse.
-		var parts = this._parseResponseTextIntoParts(text);
-		// Process.
-		var errors = 0;
-		for (var i = 0; i < parts.length; i++) {
-			errors += this._processPart(parts[i]);
-		}
-		return errors;
-    	},
-    	
-    	// Called on response arrival.
-    	_onresponse: function(text) {
-		var nextQueryDelay = Math.round(this.JS_WAIT_RECONNECT_DELAY * 1000);
-			
-		// Work-around to handle page unload. In case of this handler is executed after
-		// the page is partly unloaded, do nothing, just return.
-		try {
-			if (!this._doc().body) return;
-		} catch (ex) {
-			return;
-		}
-			
-		// Run the query.
-		var errors = 0;
-		try {
-			// Empty response typically means that there is no error, but
-			// server WAIT timeout expired and we need to reconnect.
-			// But we exit via exception to check: is it a bounce or not.
-			if (text.match(/^\s*$/)) {
-				text = "";
-				throw "Empty response";
-			}
-			this._processResponseText(text);
-			this._bounceCount = 0;
-		} catch (e) {
-			var t = new Date().getTime();
-			if (t - this._prevReqTime < this.JS_WAIT_TIMEOUT / 2 * 1000) {
-				// This is an unexpected disconnect (bounce).
-				this._bounceCount++;
-				this._log("Bounce detected (bounceCount = " + this._bounceCount + ")");
-			} else {
-				this._log("Disconnect detected");
-			}
-			if (text != "") {
-				this._error(e.message? e.message : e, "Response:\n" + text);
-			}
-			this._prevReqTime = t;
-		}
-			
-		// Calculate next query delay.
-		if (this._bounceCount > this.JS_MAX_BOUNCES) {
-			// Progressive delay.
-			var progressive = this._bounceCount - this.JS_MAX_BOUNCES + 2;
-			nextQueryDelay = 1000 + 500 * progressive * progressive;
-			if (nextQueryDelay > 60000) nextQueryDelay = 60000;
-		}
-			
-		// Schedule next query, but only if there was no other request
-		// performed (e.g. via execute() call) within the callback.
-		if (!this._lastXmlhttp) {
-			this._log("Next query in " + nextQueryDelay + " ms");
-			var th = this;
-			setTimeout(function() { th._loopFunc() }, nextQueryDelay);
-		}
-    	},
-    	
-    	// Make value for identifier=... argument.
-    	_makeRequestId: function() {
-    		var parts = [];
-    		for (var id in this._ids) if (this._ids.hasOwnProperty(id)) {
-    			var v = this._ids[id];
-    			if (!v.callbacks.length) continue;
-    			parts.push(
-    				(v.cursor !== null? v.cursor + ":" : "") + 
-    				(this._namespace != null? this._namespace : "") + id
-    			);
-    		}
-    		return parts.join(",");
-    	},
-    	
-	// Loop function.
-	_loopFunc: function() {
-		var requestId = this._makeRequestId();
-		if (!requestId.length) return;
-		var idParam = this.JS_IDENTIFIER + '=' + requestId;
-		var url = null, postData = null;
-		if (idParam.length + this.JS_WAIT_URI.length < 1700) {
-			// GET method is only for not too long URLs.
-			url = this.JS_WAIT_URI + '?' + idParam;
-			url += "&ncrnd=" + (new Date().getTime()); // for stupid IE
-		} else {
-			// For very long IDs list - use POST method (always trail
-			// the data with "\n", because else identifier=... will not 
-			// be recognized).
-			url = this.JS_WAIT_URI;
-			postData = idParam + "\n";
-		}
-		
-		var xmlhttp = this._getXmlHttp();
-		if (!xmlhttp) {
-			this._error("No XMLHttpRequest found!");
-			return;
-		}
+    // Realplexor WAIT url parts.
+    JS_WAIT_URI: '$JS_WAIT_URI',
 
-		var th = this;
-		xmlhttp.open(postData? 'POST' : 'GET', url, true);
-		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState != 4) return;
-			if (!th._lastXmlhttp) return; // abort() called
-			th._lastXmlhttp = null;
-			th._onresponse("" + xmlhttp.responseText);
-			th = null;
-		}
-		xmlhttp.send(postData);
-		this._prevReqTime = new Date().getTime();
-		this._lastXmlhttp = xmlhttp;
-	},
+    // Realplexor normal WAIT timeout (seconds).
+    JS_WAIT_TIMEOUT: $WAIT_TIMEOUT,
 
-	// Run the polling process.
-	// Argument structure: { id: { cursor: NNN, callbacks: [ callback1, callback2, ... ] } }
-	// Second parameter must accept a function which will be called to
-	// call parent's callbacks (it is needed for IE, to not to loose
-	// exceptions thrown from a different frame).
-	execute: function(callbacks, callAndReturnException, namespace) {
-		var th = this;
-		window.onunload = function() { 
-			// This is for IE7: it does not abort the connection on unload
-			// and reaches the connection limit.
-			try { 
-				if (th._lastXmlhttp) {
-					th._lastXmlhttp.onreadystatechange = function(){};
-					th._lastXmlhttp.abort();
-					th._lastXmlhttp = null;
-				}
-			} catch (e) {}
-		}
-		if (this._lastXmlhttp) {
-			var xhr = this._lastXmlhttp;
-			this._lastXmlhttp = null;
-			xhr.onreadystatechange = function(){};
-			xhr.abort();  // abort() does not make bounce if this._lastXmlhttp is null
-		}
-		this._namespace = namespace && namespace.length? namespace : null;
-		this._ids = callbacks;
-		this._callAndReturnException = callAndReturnException;
-		this._loopFunc();
-	},
-	
-	// Prepare Realplexor to execution.
-	prepare: function() {
-		if (!document.location.search.match(/HOST=([^&]+)/)) {
-			this._error("IFRAME src attribute must contain HOST=... specifier - parent's host name");
-			return;
-		}
-		document.domain = RegExp.$1;
-	}
+    JS_IDENTIFIER: '$IDENTIFIER',
+
+    // It debug mode turned on?
+    JS_DEBUG: $JS_DEBUG,
+
+    // Count of sequential bounces.
+    _bounceCount: 0,
+
+    // Namespace to use.
+    _namespace: null,
+
+    // Previous request time.
+    _prevReqTime: null,
+
+    // Previously used xmlhttp.
+    _lastXmlhttp: null,
+
+    // Pairs of [cursor, [ callback1, callback2, ... ]] for each ID.
+    // Callbacks will be called on data ready.
+    _ids: {},
+
+    // Work-around for stupid IE. Unfortunately IE cannot catch exceptions
+    // thrown from a callback created in a different frame, so we run such
+    // callbacks wrapped by _callAndReturnException function. This
+    // function is passed from the parent frame.
+    _callAndReturnException: null,
+
+    // Return the parent's document.
+    _doc: function() {
+        return parent.document;
+    },
+
+    // Create a new XMLHttpRequest object.
+    _getXmlHttp: function() {
+        var xmlhttp;
+        if (typeof XMLHttpRequest != 'undefined') {
+            xmlhttp = new XMLHttpRequest();
+        }
+        if (!xmlhttp) try {
+            xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e) {
+        }
+        if (!xmlhttp) try {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch (e) {
+        }
+        return xmlhttp;
+    },
+
+    // Log a debug message.
+    _log: function(msg, func) {
+        if (!this.JS_DEBUG) return;
+        if (window.console) {
+            if (!func) func = "log";
+            var multiline = false;
+            if ((""+msg).match(/^([^\r\n]+)\r?\n([\s\S]*)$/)) {
+                var first = RegExp.$1, second = RegExp.$2;
+                if (console.groupCollapsed) {
+                    console.groupCollapsed(first);
+                    console[func](second + "\n");
+                    console.groupEnd();
+                } else {
+                    console.info(first);
+                    console[func](second + "\n");
+                }
+            } else {
+                console[func](msg);
+            }
+        }
+    },
+
+    // Log an error message.
+    _error: function(prefix, msg) {
+        this._log(prefix, "error");
+        this._log(msg);
+    },
+
+    // Process a single part.
+    _processPart: function(part) {
+        var errors = 0;
+
+        // Extract IDs.
+        var pairs = part.ids;
+        if (pairs == null) {
+            throw "Cannot find \"ids\" property within the response part";
+        }
+
+        // Extract data.
+        var data = part.data;
+        if (data == undefined) {
+            throw "Cannot find \"data\" property within the response part";
+        }
+
+        // Process parts one after another.
+        for (var id in pairs) if (pairs.hasOwnProperty(id)) {
+            var cursor = pairs[id];
+            // Strip namespace prefix.
+            if (this._namespace != null) {
+                if (id.indexOf(this._namespace) == 0) {
+                    id = id.substring(this._namespace.length);
+                }
+            }
+            if (!this._ids[id]) {
+                this._ids[id] = { cursor: null, callbacks: [] };
+            }
+            var item = this._ids[id];
+            item.cursor = cursor; // do not call parseFloat here! else you loose precision
+            for (var j = 0; j < item.callbacks.length; j++) {
+                var e = this._callAndReturnException(item.callbacks[j], [data, id, item.cursor]);
+                if (e) {
+                    this._error("Error executing callback #" + j + " for ID " + id + ": " + e, "Data:\n" + data);
+                    errors++;
+                }
+            }
+        }
+        return errors;
+    },
+
+    // Parse multipart response text and return list of parts.
+    _parseResponseTextIntoParts: function(text) {
+        if (!text.match(/^\s*\[[\s\S]*\]\s*$/i)) {
+            throw "Response is not a complete JSON";
+        }
+        var parts;
+        eval("parts = " + text);
+        return parts;
+    },
+
+    // Process the response data.
+    _processResponseText: function(text) {
+        // Safary bug: responseText sometimes contain headers+body, not only body!
+        // So cat before the first "[".
+        text = text.replace(/^[\s\S]*?(?=\[)/g, '');
+        this._log("Received response:\n" + text);
+        // Parse.
+        var parts = this._parseResponseTextIntoParts(text);
+        // Process.
+        var errors = 0;
+        for (var i = 0; i < parts.length; i++) {
+            errors += this._processPart(parts[i]);
+        }
+        return errors;
+        },
+
+        // Called on response arrival.
+        _onresponse: function(text) {
+        var nextQueryDelay = Math.round(this.JS_WAIT_RECONNECT_DELAY * 1000);
+
+        // Work-around to handle page unload. In case of this handler is executed after
+        // the page is partly unloaded, do nothing, just return.
+        try {
+            if (!this._doc().body) return;
+        } catch (ex) {
+            return;
+        }
+
+        // Run the query.
+        var errors = 0;
+        try {
+            // Empty response typically means that there is no error, but
+            // server WAIT timeout expired and we need to reconnect.
+            // But we exit via exception to check: is it a bounce or not.
+            if (text.match(/^\s*$/)) {
+                text = "";
+                throw "Empty response";
+            }
+            this._processResponseText(text);
+            this._bounceCount = 0;
+        } catch (e) {
+            var t = new Date().getTime();
+            if (t - this._prevReqTime < this.JS_WAIT_TIMEOUT / 2 * 1000) {
+                // This is an unexpected disconnect (bounce).
+                this._bounceCount++;
+                this._log("Bounce detected (bounceCount = " + this._bounceCount + ")");
+            } else {
+                this._log("Disconnect detected");
+            }
+            if (text != "") {
+                this._error(e.message? e.message : e, "Response:\n" + text);
+            }
+            this._prevReqTime = t;
+        }
+
+        // Calculate next query delay.
+        if (this._bounceCount > this.JS_MAX_BOUNCES) {
+            // Progressive delay.
+            var progressive = this._bounceCount - this.JS_MAX_BOUNCES + 2;
+            nextQueryDelay = 1000 + 500 * progressive * progressive;
+            if (nextQueryDelay > 60000) nextQueryDelay = 60000;
+        }
+
+        // Schedule next query, but only if there was no other request
+        // performed (e.g. via execute() call) within the callback.
+        if (!this._lastXmlhttp) {
+            this._log("Next query in " + nextQueryDelay + " ms");
+            var th = this;
+            setTimeout(function() { th._loopFunc() }, nextQueryDelay);
+        }
+        },
+
+        // Make value for identifier=... argument.
+        _makeRequestId: function() {
+            var parts = [];
+            for (var id in this._ids) if (this._ids.hasOwnProperty(id)) {
+                var v = this._ids[id];
+                if (!v.callbacks.length) continue;
+                parts.push(
+                    (v.cursor !== null? v.cursor + ":" : "") +
+                    (this._namespace != null? this._namespace : "") + id
+                );
+            }
+            return parts.join(",");
+        },
+
+    // Loop function.
+    _loopFunc: function() {
+        var requestId = this._makeRequestId();
+        if (!requestId.length) return;
+        var idParam = this.JS_IDENTIFIER + '=' + requestId;
+        var url = null, postData = null;
+        if (idParam.length + this.JS_WAIT_URI.length < 1700) {
+            // GET method is only for not too long URLs.
+            url = this.JS_WAIT_URI + '?' + idParam;
+            url += "&ncrnd=" + (new Date().getTime()); // for stupid IE
+        } else {
+            // For very long IDs list - use POST method (always trail
+            // the data with "\n", because else identifier=... will not
+            // be recognized).
+            url = this.JS_WAIT_URI;
+            postData = idParam + "\n";
+        }
+
+        var xmlhttp = this._getXmlHttp();
+        if (!xmlhttp) {
+            this._error("No XMLHttpRequest found!");
+            return;
+        }
+
+        var th = this;
+        xmlhttp.open(postData? 'POST' : 'GET', url, true);
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState != 4) return;
+            if (!th._lastXmlhttp) return; // abort() called
+            th._lastXmlhttp = null;
+            th._onresponse("" + xmlhttp.responseText);
+            th = null;
+        }
+        xmlhttp.send(postData);
+        this._prevReqTime = new Date().getTime();
+        this._lastXmlhttp = xmlhttp;
+    },
+
+    // Run the polling process.
+    // Argument structure: { id: { cursor: NNN, callbacks: [ callback1, callback2, ... ] } }
+    // Second parameter must accept a function which will be called to
+    // call parent's callbacks (it is needed for IE, to not to loose
+    // exceptions thrown from a different frame).
+    execute: function(callbacks, callAndReturnException, namespace) {
+        var th = this;
+        window.onunload = function() {
+            // This is for IE7: it does not abort the connection on unload
+            // and reaches the connection limit.
+            try {
+                if (th._lastXmlhttp) {
+                    th._lastXmlhttp.onreadystatechange = function(){};
+                    th._lastXmlhttp.abort();
+                    th._lastXmlhttp = null;
+                }
+            } catch (e) {}
+        }
+        if (this._lastXmlhttp) {
+            var xhr = this._lastXmlhttp;
+            this._lastXmlhttp = null;
+            xhr.onreadystatechange = function(){};
+            xhr.abort();  // abort() does not make bounce if this._lastXmlhttp is null
+        }
+        this._namespace = namespace && namespace.length? namespace : null;
+        this._ids = callbacks;
+        this._callAndReturnException = callAndReturnException;
+        this._loopFunc();
+    },
+
+    // Prepare Realplexor to execution.
+    prepare: function() {
+        if (!document.location.search.match(/HOST=([^&]+)/)) {
+            this._error("IFRAME src attribute must contain HOST=... specifier - parent's host name");
+            return;
+        }
+        document.domain = RegExp.$1;
+    }
 }
 Dklab_Realplexor_Loader.prepare();
 </script>
 </body>
-</html>	
+</html>

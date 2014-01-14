@@ -2,21 +2,21 @@
 dklab_realplexor: check chains usage
 
 --SKIPIF--
-<?php 
+<?php
 $NORUN = 1;
 require dirname(__FILE__) . '/init.php';
-if ($IS_BIN) echo 'skip'; 
+if ($IS_BIN) echo 'skip';
 ?>
 --FILE--
 <?php
 $REALPLEXOR_CONF = "small_chain_len.conf";
 require dirname(__FILE__) . '/init.php';
 for ($i = 0; $i < 20; $i++) {
-	send_wait("
-		identifier=abc" . sprintf("%02d", $i) . "
-		aaa
-	");
-	disconnect_wait();
+    send_wait("
+        identifier=abc" . sprintf("%02d", $i) . "
+        aaa
+    ");
+    disconnect_wait();
 }
 
 send_in(null, "watch 1");
@@ -87,7 +87,7 @@ IN <== watch 1
 IN ==> HTTP/1.0 200 OK
 IN ==> Content-Type: text/plain
 IN ==> Content-Length: 192
-IN ==> 
+IN ==>
 IN ==> online *:abc08
 IN ==> online *:abc09
 IN ==> online *:abc10

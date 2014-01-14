@@ -8,8 +8,8 @@ $REALPLEXOR_CONF = "script_stub.conf";
 require dirname(__FILE__) . '/init.php';
 
 send_wait("
-	identifier=SCRIPT
-	aaa
+    identifier=SCRIPT
+    aaa
 ");
 recv_wait();
 
@@ -41,6 +41,6 @@ WA --> Content-Type: text/javascript; charset=utf-8
 WA --> Last-Modified: ***
 WA --> Expires: ***
 WA --> Cache-Control: public
-WA --> 
+WA -->
 WA --> SCRIPT stub: [SCRIPT].
 WA :: Disconnecting.

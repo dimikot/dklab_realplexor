@@ -9,8 +9,8 @@ require dirname(__FILE__) . '/init.php';
 $mpl->logon("user", "password");
 
 send_wait("
-	identifier=5:user_abc,10:user_def
-	aaa
+    identifier=5:user_abc,10:user_def
+    aaa
 ");
 
 printr($mpl->cmdOnline());

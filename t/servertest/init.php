@@ -38,8 +38,8 @@ function printr($value, $comment=null)
     ob_start();
     var_export($value);
     $txt = ob_get_clean();
-    echo preg_replace('/[ \t\r]+$/m', '', $txt);
-    echo "\n";
+    $txt = preg_replace('/[ \t\r]+$/m', '', $txt);
+    echo "$txt\n";
 }
 
 function run($cmd)
@@ -84,7 +84,7 @@ function start_realplexor()
             $filter = '$| = 1';
         }
         if ($IS_BIN) {
-            $exe = "sh -c './dklab_realplexor'"; // run in sub-shell to catch "Killed" message
+            $exe = "./dklab_realplexor";
             $conf = $REALPLEXOR_CONF;
         } else {
             $exe = "perl dklab_realplexor.pl";
@@ -94,7 +94,8 @@ function start_realplexor()
         if ($conf) {
             $args = escapeshellarg(dirname(__FILE__) . '/fixture/' . $conf);
         }
-        run("cd ../.. && $exe $args 2>&1 | tee -a $OUT_TMP " .
+        // Run via "sh -c" to catch "Killed" message of killall.
+        run("cd ../.. && sh -c '$exe $args' 2>&1 | tee -a $OUT_TMP " .
             "| perl -pe " . escapeshellarg($filter) .
             ($GLOBALS['VERBOSE'] ? "" : " | tail -n1")
         );

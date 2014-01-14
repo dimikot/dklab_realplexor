@@ -58,9 +58,9 @@ public:
             firstTime = false;
         }
         // Create new stopped timer.
-        auto wrapper = [&storage, callback, id](int) {
-            auto guard = storage[id];
-            storage.erase(id); // thanks to guard, the timer is deleted only when we exit this closure
+        auto wrapper = [this, callback, id](int) {
+            auto guard = this->storage[id];
+            this->storage.erase(id); // thanks to guard, the timer is deleted only when we exit this closure
             callback(); // it is important for logs to call erase() before the callback
         };
         storage[id].reset(new Realplexor::Event::Timer<decltype(wrapper)>(wrapper));

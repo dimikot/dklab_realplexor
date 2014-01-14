@@ -120,6 +120,7 @@ CHANGELOG
   - [MIN] Brushed up C++ version, Ubuntu 12.04 build instructions.
   - [MIN] Banner comments added to source files.
   - [MIN] Tabs to spaces.
+  - [BUG] GCC 2.7 compatibility & GCC bug work-around
 
 * Dklab Realplexor 2011-07-28: v1.40
   - [NEW] Python API added (experimental)

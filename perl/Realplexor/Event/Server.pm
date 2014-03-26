@@ -110,16 +110,15 @@ sub handle_read {
         }
 
         # Read the next data chunk.
-        local $/;
-        my $data = <$fh>;
+        my $nread = $connection->read_available_data();
 
         # End of the request reached (must never reach be cause of eof() check above?).
-        if (!defined $data) {
+        if (!$nread) {
             return 0;
         }
 
         # Run data handler.
-        $connection->onread($data);
+        $connection->onread($nread);
         return 1;
     };
     return $result if defined $result;

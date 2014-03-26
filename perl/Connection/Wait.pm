@@ -34,21 +34,18 @@ sub new {
 
     my $self = $class->SUPER::new(@args);
     $self->{pairs} = undef;
-    $self->{data} = "";
     return $self;
 }
 
 # Called when a data is available to read.
 sub onread {
-    my ($self, $data) = @_;
-    $self->SUPER::onread($data);
+    my ($self, $nread) = @_;
+    $self->SUPER::onread($nread);
 
     # Data must be ignored, identifier is already extracted.
     if (defined $self->{pairs}) {
         return;
     }
-    # Append data.
-    $self->{data} .= $data;
 
     # Try to extract IDs from the new data chunk.
     #print "----------\n" . $self->{data} . "\n---------------\n";
@@ -85,7 +82,7 @@ sub onread {
 
         # Ignore all other input from IN and register identifiers.
         $self->{pairs} = $pairs;
-        $self->{data} = undef; # GC
+        $self->{data} = ""; # GC
         $pairs_by_fhs->set_pairs_for_fh($self->fh, $pairs);
         foreach my $pair (@$pairs) {
             my ($cursor, $id) = @$pair;
@@ -109,7 +106,7 @@ sub onread {
 
     # Check for the data overflow.
     if (length($self->{data}) > $CONFIG{WAIT_MAXLEN}) {
-        die "overflow (received " . length($data) . " bytes total)\n";
+        die "overflow (received $nread bytes total)\n";
     }
 }
 

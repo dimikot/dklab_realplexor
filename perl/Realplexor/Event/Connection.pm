@@ -23,6 +23,7 @@ sub new {
     my $self = bless {
         fh     => $fh,
         server => $server,
+        data   => "",
         # Save peer address now, because it may be inaccessible
         # in case of the manual socket shutdown.
         addr   => ($fh->peerhost||'?') . ":" . ($fh->peerport||'?'),
@@ -43,6 +44,20 @@ sub DESTROY {
     $self->debug("connection closed");
 }
 
+# Reads available data chunk from fh and returns number of read bytes.
+sub read_available_data {
+    my ($self) = @_;
+    my $fh = $self->{fh};
+    local $/;
+    my $data = <$fh>;
+    # End of the request reached (must never reach be cause of eof() check above?).
+    if (!defined $data) {
+        return 0;
+    }
+    $self->{data} .= $data;
+    return length($data);
+}
+
 # Called on timeout.
 sub ontimeout {
     my ($self) = @_;
@@ -57,8 +72,8 @@ sub onerror {
 
 # Called on data read.
 sub onread {
-    my ($self, $data) = @_;
-    $self->debug("read " . length($data) . " bytes");
+    my ($self, $nread) = @_;
+    $self->debug("read $nread bytes");
 }
 
 # Called on close.

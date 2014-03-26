@@ -24,7 +24,6 @@ use Realplexor::Config;
 sub new {
     my ($class, @args) = @_;
     my $self = $class->SUPER::new(@args);
-    $self->{data} = "";
     $self->{pairs} = undef;
     $self->{limit_ids} = undef;
     $self->{cred} = undef;
@@ -47,11 +46,8 @@ sub onerror {
 
 # Called when a data is available to read.
 sub onread {
-    my ($self, $data) = @_;
-    $self->SUPER::onread($data);
-
-    # Append data.
-    $self->{data} .= $data if defined $self->{data};
+    my ($self, $nread) = @_;
+    $self->SUPER::onread($nread);
 
     # Try to extract ID from the new data chunk.
     if (!defined $self->{pairs}) {
@@ -74,7 +70,7 @@ sub onread {
 
     # Check for the data overflow.
     if (length($self->{data}) > $CONFIG{IN_MAXLEN}) {
-        die "overflow (received " . length($data) . " bytes total)\n";
+        die "overflow (received $nread bytes total)\n";
     }
 }
 
@@ -109,7 +105,7 @@ sub assert_auth {
     };
     if ($@) {
         $self->{pairs} = undef;
-        $self->{data} = undef;
+        $self->{data} = "";
         $self->_send_response($@, "403 Access Deined");
         die $@;
     }
@@ -126,7 +122,7 @@ sub try_process_cmd {
     $self->{data} =~ m/(?: ^ | \r?\n\r?\n) (ONLINE|STATS|WATCH) (?:\s+ ([^\r\n]*) )? (?: $tail_re )/six or return 0;
     # Cmd extracted, process it.
     $self->{pairs} = undef;
-    $self->{data} = undef;
+    $self->{data} = "";
     # Assert authorization.
     $self->assert_auth();
     my $cmd = uc $1;
@@ -148,7 +144,7 @@ sub try_process_pairs {
         my (undef, $data) = split /\r?\n\r?\n/s, $self->{data}, 2;
         if (!defined($data)) {
             $self->debug("passed empty HTTP body, ignored");
-            $self->{data} = undef;
+            $self->{data} = "";
             return;
         }
         my $login = $self->{cred}? $self->{cred}[0] : undef;
@@ -269,7 +265,7 @@ sub _send_response {
     print $fh $$rdata;
     $fh->flush(); # MUST be executed! else SIGPIPE may be issued
     shutdown($fh, 2);
-    $self->{data} = undef;
+    $self->{data} = "";
 }
 
 return 1;

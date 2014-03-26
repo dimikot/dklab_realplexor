@@ -57,9 +57,10 @@ public:
         DEBUG("connection opened");
     }
 
-    string& get_data_buf()
+    // Reads available data chunk from fh and returns number of read bytes.
+    size_t read_available_data()
     {
-        return data;
+        return _fh->read_and_append_to(data);
     }
 
     // Called on close.

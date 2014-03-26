@@ -117,7 +117,7 @@ public:
                 return false;
             }
             // Read the next data chunk.
-            size_t nread = fh->read_and_append_to(connection->get_data_buf());
+            size_t nread = connection->read_available_data();
             // End of the request reached (must never reach because of eof() check above?).
             if (!nread) {
                 return false;

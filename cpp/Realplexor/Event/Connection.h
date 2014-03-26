@@ -44,7 +44,7 @@ private:
     string addr;
 
 protected:
-    string data;
+    string rdata;
 
 public:
 
@@ -60,7 +60,7 @@ public:
     // Reads available data chunk from fh and returns number of read bytes.
     size_t read_available_data()
     {
-        return _fh->read_and_append_to(data);
+        return _fh->read_and_append_to(rdata);
     }
 
     // Called on close.

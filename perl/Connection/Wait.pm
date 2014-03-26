@@ -49,7 +49,7 @@ sub onread {
 
     # Try to extract IDs from the new data chunk.
     #print "----------\n" . $self->{data} . "\n---------------\n";
-    my $pairs = Realplexor::Common::extract_pairs($self->{data});
+    my $pairs = Realplexor::Common::extract_pairs($self->{rdata});
     if (defined $pairs) {
         die "Empty identifier passed\n" if !@$pairs;
 
@@ -82,7 +82,7 @@ sub onread {
 
         # Ignore all other input from IN and register identifiers.
         $self->{pairs} = $pairs;
-        $self->{data} = ""; # GC
+        $self->{rdata} = ""; # GC
         $pairs_by_fhs->set_pairs_for_fh($self->fh, $pairs);
         foreach my $pair (@$pairs) {
             my ($cursor, $id) = @$pair;
@@ -105,7 +105,7 @@ sub onread {
     }
 
     # Check for the data overflow.
-    if (length($self->{data}) > $CONFIG{WAIT_MAXLEN}) {
+    if (length($self->{rdata}) > $CONFIG{WAIT_MAXLEN}) {
         die "overflow (received $nread bytes total)\n";
     }
 }

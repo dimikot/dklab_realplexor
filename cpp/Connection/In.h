@@ -54,7 +54,7 @@ public:
     {
         Realplexor::Event::Connection::ontimeout();
         pairs->clear();
-        data = "";
+        rdata = "";
     }
 
     // Called on error.
@@ -62,7 +62,7 @@ public:
     {
         Realplexor::Event::Connection::onerror(msg);
         pairs->clear();
-        data = "";
+        rdata = "";
     }
 
     // Called when a data is available to read.
@@ -72,7 +72,7 @@ public:
 
         // Try to extract ID from the new data chunk.
         if (!pairs->size()) {
-            if (Realplexor::Common::extract_pairs(data, *pairs, *limit_ids, cred)) {
+            if (Realplexor::Common::extract_pairs(rdata, *pairs, *limit_ids, cred)) {
                 DEBUG(
                     "parsed IDs"
                     + (limit_ids->size()? "; limiters are (" + join(sort_keys(*limit_ids), ", ") + ")" : "")
@@ -86,8 +86,8 @@ public:
         if (_try_process_cmd(false)) return;
 
         // Check for the data overflow.
-        if (data.length() > CONFIG.in_maxlen) {
-            die("overflow (received " + lexical_cast<string>(data.length()) + " bytes total)");
+        if (rdata.length() > CONFIG.in_maxlen) {
+            die("overflow (received " + lexical_cast<string>(rdata.length()) + " bytes total)");
         }
     }
 
@@ -121,7 +121,7 @@ private:
             }
         } catch (exception& e) {
             pairs->clear();
-            data = "";
+            rdata = "";
             _send_response(string(e.what()) + "\n", "403 Access Deined");
             throw;
         }
@@ -132,17 +132,17 @@ private:
     // always by \n).
     bool _try_process_cmd(bool finished_reading)
     {
-        if (!data.length()) return false;
+        if (!rdata.length()) return false;
         // Try to extract cmd.
         string tail_re = finished_reading? "\r?\n\r?\n|$" : "\r?\n\r?\n";
         regex re_in_cmd("(?:^|\r?\n\r?\n)(ONLINE|STATS|WATCH)(?:\\s+([^\r\n]*))?(?:" + tail_re + ")", regex::icase);
         boost::smatch m;
-        if (!regex_search(data, m, re_in_cmd)) return false;
+        if (!regex_search(rdata, m, re_in_cmd)) return false;
         string cmd = to_upper_copy(string(m[1]));
         string arg = m[2];
         // Cmd extracted, process it.
         pairs->clear();
-        data = "";
+        rdata = "";
         // Assert authorization.
         _assert_auth();
         DEBUG("received aux command: " + cmd + (arg.length()? " " + arg : ""));
@@ -160,18 +160,18 @@ private:
     // Try to process pairs.
     bool _try_process_pairs()
     {
-        if (!data.length()) return false;
+        if (!rdata.length()) return false;
         if (pairs->size()) {
             // Clear headers from the data.
             size_t pos_body;
-            if (!get_http_body(data, pos_body)) {
+            if (!get_http_body(rdata, pos_body)) {
                 DEBUG("passed empty HTTP body, ignored");
-                data = "";
+                rdata = "";
                 return false;
             }
             vector<ident_t> ids_to_process;
             auto checker = _id_prefixes_to_checker("");
-            auto rdata = shared_ptr<string>(new string(data, pos_body));
+            auto refdata = shared_ptr<string>(new string(rdata, pos_body));
             for (auto& pair: *pairs) {
                 cursor_t cursor = pair.cursor;
                 ident_t id = pair.id;
@@ -182,7 +182,7 @@ private:
                 }
                 // Add data to queue and set lifetime.
                 ids_to_process.push_back(id);
-                data_to_send.add_dataref_to_id(id, cursor, rdata, limit_ids);
+                data_to_send.add_dataref_to_id(id, cursor, refdata, limit_ids);
                 int timeout = CONFIG.clean_id_after;
                 auto callback = [id, timeout]() {
                     data_to_send.clear_id(id);
@@ -271,7 +271,7 @@ private:
         fh()->flush(); // MUST be executed! else SIGPIPE may be issued
         fh()->shutdown(2);
         pairs->clear();
-        data = "";
+        rdata = "";
     }
 };
 

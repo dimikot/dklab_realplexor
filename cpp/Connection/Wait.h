@@ -60,7 +60,7 @@ public:
         // Try to extract IDs from the new data chunk.
         Realplexor::LimitIdsSet limit_ids;
         Realplexor::CredPair cred;
-        if (Realplexor::Common::extract_pairs(data, *pairs, limit_ids, cred)) {
+        if (Realplexor::Common::extract_pairs(rdata, *pairs, limit_ids, cred)) {
             if (!pairs->size()) throw runtime_error("Empty identifier passed");
 
             // Check if we have special marker: IFRAME.
@@ -93,7 +93,7 @@ public:
             fh()->flush();
 
             // Ignore all other input from IN and register identifiers.
-            data = "";
+            rdata = "";
             pairs_by_fhs.set_pairs_for_fh(fh(), pairs);
             IdsToSendSet ids_to_process;
             for (auto& pair: *pairs) {
@@ -121,8 +121,8 @@ public:
         }
 
         // Check for the data overflow.
-        if (data.length() > CONFIG.wait_maxlen) {
-            throw runtime_error("overflow (received " + lexical_cast<string>(data.length()) + " bytes total)");
+        if (rdata.length() > CONFIG.wait_maxlen) {
+            throw runtime_error("overflow (received " + lexical_cast<string>(rdata.length()) + " bytes total)");
         }
     }
 

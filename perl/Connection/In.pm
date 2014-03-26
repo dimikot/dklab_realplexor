@@ -51,7 +51,7 @@ sub onread {
 
     # Try to extract ID from the new data chunk.
     if (!defined $self->{pairs}) {
-        my ($pairs, $limit_ids, $cred) = Realplexor::Common::extract_pairs($self->{data}, 1);
+        my ($pairs, $limit_ids, $cred) = Realplexor::Common::extract_pairs($self->{rdata}, 1);
         if (defined $pairs) {
             $self->{pairs} = $pairs;
             $self->{limit_ids} = $limit_ids;
@@ -69,7 +69,7 @@ sub onread {
     $self->try_process_cmd() and return;
 
     # Check for the data overflow.
-    if (length($self->{data}) > $CONFIG{IN_MAXLEN}) {
+    if (length($self->{rdata}) > $CONFIG{IN_MAXLEN}) {
         die "overflow (received $nread bytes total)\n";
     }
 }
@@ -105,7 +105,7 @@ sub assert_auth {
     };
     if ($@) {
         $self->{pairs} = undef;
-        $self->{data} = "";
+        $self->{rdata} = "";
         $self->_send_response($@, "403 Access Deined");
         die $@;
     }
@@ -116,13 +116,13 @@ sub assert_auth {
 # always by \n).
 sub try_process_cmd {
     my ($self, $finished_reading) = @_;
-    $self->{data} or return 0;
+    $self->{rdata} or return 0;
     # Try to extract cmd.
     my $tail_re = $finished_reading? qr/\r?\n\r?\n|$/s : qr/\r?\n\r?\n/s;
-    $self->{data} =~ m/(?: ^ | \r?\n\r?\n) (ONLINE|STATS|WATCH) (?:\s+ ([^\r\n]*) )? (?: $tail_re )/six or return 0;
+    $self->{rdata} =~ m/(?: ^ | \r?\n\r?\n) (ONLINE|STATS|WATCH) (?:\s+ ([^\r\n]*) )? (?: $tail_re )/six or return 0;
     # Cmd extracted, process it.
     $self->{pairs} = undef;
-    $self->{data} = "";
+    $self->{rdata} = "";
     # Assert authorization.
     $self->assert_auth();
     my $cmd = uc $1;
@@ -137,14 +137,14 @@ sub try_process_cmd {
 # Try to process pairs.
 sub try_process_pairs {
     my ($self) = @_;
-    $self->{data} or return;
+    $self->{rdata} or return;
     my $pairs = $self->{pairs};
     if (defined $pairs) {
         # Clear headers from the data.
-        my (undef, $data) = split /\r?\n\r?\n/s, $self->{data}, 2;
+        my (undef, $data) = split /\r?\n\r?\n/s, $self->{rdata}, 2;
         if (!defined($data)) {
             $self->debug("passed empty HTTP body, ignored");
-            $self->{data} = "";
+            $self->{rdata} = "";
             return;
         }
         my $login = $self->{cred}? $self->{cred}[0] : undef;
@@ -265,7 +265,7 @@ sub _send_response {
     print $fh $$rdata;
     $fh->flush(); # MUST be executed! else SIGPIPE may be issued
     shutdown($fh, 2);
-    $self->{data} = "";
+    $self->{rdata} = "";
 }
 
 return 1;

@@ -23,7 +23,7 @@ sub new {
     my $self = bless {
         fh     => $fh,
         server => $server,
-        data   => "",
+        rdata  => "",
         # Save peer address now, because it may be inaccessible
         # in case of the manual socket shutdown.
         addr   => ($fh->peerhost||'?') . ":" . ($fh->peerport||'?'),
@@ -54,7 +54,7 @@ sub read_available_data {
     if (!defined $data) {
         return 0;
     }
-    $self->{data} .= $data;
+    $self->{rdata} .= $data;
     return length($data);
 }
 

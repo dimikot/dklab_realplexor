@@ -18,6 +18,7 @@ use strict;
 
 # Called on new connection.
 # DO NOT save $event object here to avoid cyclic references!
+# Note that $server is needed here for logging purposes only (e.g. $server->error()).
 sub new {
     my ($class, $fh, $server) = @_;
     my $self = bless {
@@ -84,12 +85,6 @@ sub onclose {
 sub fh {
     my ($self) = @_;
     return $self->{fh};
-}
-
-# Returns the server.
-sub server {
-    my ($self) = @_;
-    return $self->{server};
 }
 
 # Returns this connection name.

@@ -43,7 +43,7 @@ public:
     // Destrictor.
     virtual ~ServerBase() {}
 
-    // Controls error messages.
+    // Controls debug messages.
     virtual void debug_(const filehandle_t& fh, const string& msg)
     {
         message(fh, "DEBUG: " + msg);

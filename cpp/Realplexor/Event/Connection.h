@@ -41,7 +41,6 @@ class Connection
 private:
     filehandle_t _fh;
     ServerBase* _server;
-    string addr;
 
 protected:
     string rdata;
@@ -49,11 +48,10 @@ protected:
 public:
 
     // Called on new connection.
-    // DO NOT save $event object here to avoid cyclic references!
+    // DO NOT save event object here to avoid cyclic references!
+    // Note that server is needed here for logging purposes only (e.g. server->error()).
     Connection(const filehandle_t& fh, ServerBase* server): _fh(fh), _server(server)
     {
-        addr = fh->peeraddr();
-        if (!addr.length()) addr = "?:?";
         DEBUG("connection opened");
     }
 
@@ -108,16 +106,10 @@ public:
         return _fh;
     }
 
-    // Returns the server.
-    ServerBase* server()
-    {
-        return _server;
-    }
-
     // Returns this connection name.
     virtual string name()
     {
-        return ""; //addr.length()? addr : "?";
+        return "";
     }
 
     // Prints a debug message.

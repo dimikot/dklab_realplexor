@@ -24,7 +24,7 @@
 // Storage::PairsByFhs: list of IDs by FHs.
 //
 // Structure: { FH => [ [cursor1, id1], [cursor2, id2], ...] }
-// Which IDs are registered in which FH's. This information is used to
+// Which IDs are registered in which FHs. This information is used to
 // implement listening on multiple IDs during a single connection.
 //
 

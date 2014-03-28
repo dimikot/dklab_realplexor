@@ -47,8 +47,6 @@ struct DataPair {
     ident_t id;
     DataPair() {}
     DataPair(cursor_t cursor, ident_t id): cursor(cursor), id(id) {}
-    DataPair(const DataPair& p): cursor(p.cursor), id(p.id) {}
-    DataPair& operator=(const DataPair& p) { cursor=p.cursor; id = p.id; return *this; }
 };
 typedef vector<DataPair> DataPairChain;
 
@@ -77,8 +75,6 @@ struct DataEvent {
 
     DataEvent() {}
     DataEvent(cursor_t cursor, DataEventType type, ident_t id): cursor(cursor), type(type), id(id) {}
-    DataEvent(const DataEvent& p): cursor(p.cursor), type(p.type), id(p.id) {}
-    DataEvent& operator=(const DataEvent& p) { cursor = p.cursor; type = p.type; id = p.id; return *this; }
 
     string getType()
     {
@@ -96,8 +92,6 @@ struct DataCursorFh {
     filehandle_t fh;
     DataCursorFh() {}
     DataCursorFh(cursor_t cursor, filehandle_t fh): cursor(cursor), fh(fh) {}
-    DataCursorFh(const DataCursorFh& p): cursor(p.cursor), fh(p.fh) {}
-    DataCursorFh& operator=(const DataCursorFh& p) { cursor=p.cursor; fh = p.fh; return *this; }
 };
 typedef map<void*, DataCursorFh> DataCursorFhByFh;
 
@@ -108,8 +102,6 @@ struct DataChunk {
     shared_ptr<unordered_set<ident_t>> rlimit_ids;
     DataChunk() {}
     DataChunk(cursor_t cursor, shared_ptr<string> rdata, shared_ptr<unordered_set<ident_t>> rlimit_ids): cursor(cursor), rdata(rdata), rlimit_ids(rlimit_ids) {}
-    DataChunk(const DataChunk& p): cursor(p.cursor), rdata(p.rdata), rlimit_ids(p.rlimit_ids) {}
-    DataChunk& operator=(const DataChunk& p) { cursor = p.cursor; rdata = p.rdata; rlimit_ids = p.rlimit_ids; return *this; }
 };
 typedef list<DataChunk> DataChunkChain;
 
@@ -120,10 +112,10 @@ struct DataToSendChunk
     cursor_t cursor;
     shared_ptr<string> rdata;
     map<ident_t, cursor_t> ids;
-    // Unfortunately we cannot disable copy constructor, because it is needed by std::map.
     DataToSendChunk() {}
-    DataToSendChunk(const DataToSendChunk& p): fh(p.fh), cursor(p.cursor), rdata(p.rdata), ids(p.ids) {}
 private:
+    // Unfortunately we cannot disable copy constructor, because it is needed by std::map,
+    // mut we disable operator=.
     DataToSendChunk& operator=(const DataToSendChunk& p);
 };
 typedef map<const string*, DataToSendChunk> DataToSendByDataRef;

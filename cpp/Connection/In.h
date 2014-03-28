@@ -262,13 +262,12 @@ private:
     // Send response anc close the connection.
     void _send_response(const string& d, const string& code = "")
     {
-        fh()->write(
+        fh()->send(
             "HTTP/1.0 " + (code.length()? code : "200 OK") + "\r\n" +
             "Content-Type: text/plain\r\n" +
             "Content-Length: " + lexical_cast<string>(d.length()) + "\r\n\r\n" +
             d
         );
-        fh()->flush(); // MUST be executed! else SIGPIPE may be issued
         fh()->shutdown(2);
         pairs->clear();
         rdata = "";

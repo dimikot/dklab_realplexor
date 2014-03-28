@@ -104,8 +104,7 @@ sub _shutdown_fh {
         $connected_fhs->del_from_id_by_fh($pair->[1], $fh);
     }
     $pairs_by_fhs->remove_by_fh($fh);
-    $fh->flush(); # MUST be executed! shutdown() does not issue flush()!
-    return shutdown($fh, 2);
+    return $fh->shutdown(2);
 }
 
 # Send first pending data to clients with specified IDs.
@@ -227,10 +226,8 @@ sub _do_send {
         # Join response blocks into one "multipart".
         my $out = "[\n" . join(",\n", @out) . "\n]";
         my $fh = $fh_by_fh->{$fh};
-        # Attention! We MUST use print, not syswrite, because print correctly
-        # continues broken transmits for large data packets.
-        my $r1 = (print $fh $out) && 1;    $r1 = "undef" if !defined $r1;
-        my $r2 = _shutdown_fh($fh) && 1;   $r2 = "undef" if !defined $r2;
+        my $r1 = $fh->send($out) && 1;   $r1 = "undef" if !defined $r1;
+        my $r2 = _shutdown_fh($fh) && 1; $r2 = "undef" if !defined $r2;
         logger("<- sending " . @out . " responses (" . length($out) . " bytes) from [" . join(", ", @seen_ids) . "] (print=$r1, shutdown=$r2)");
     }
 }
@@ -251,16 +248,17 @@ sub hook_check_visibility {
 # Send IFRAME content.
 sub send_static {
     my ($fh, $param, $type) = @_;
-    print $fh "HTTP/1.1 200 OK\r\n";
-    print $fh "Connection: close\r\n";
-    print $fh "Content-Type: $type\r\n";
-    print $fh "Last-Modified: " . $CONFIG{"${param}_TIME"} . "\r\n";
-    print $fh "Expires: Wed, 08 Jul 2037 22:53:52 GMT\r\n";
-    print $fh "Cache-Control: public\r\n";
-    print $fh "\r\n";
-    print $fh $CONFIG{"${param}_CONTENT"};
-    $fh->flush(); # MUST be executed! shutdown() does not issue flush()!
-    shutdown($fh, 2); # don't use close, it breaks event machine!
+    $fh->send(
+        "HTTP/1.1 200 OK\r\n" .
+        "Connection: close\r\n" .
+        "Content-Type: $type\r\n" .
+        "Last-Modified: " . $CONFIG{"${param}_TIME"} . "\r\n" .
+        "Expires: Wed, 08 Jul 2037 22:53:52 GMT\r\n" .
+        "Cache-Control: public\r\n" .
+        "\r\n" .
+        $CONFIG{"${param}_CONTENT"}
+    );
+    $fh->shutdown(2); # don't use close, it breaks event machine!
 }
 
 # Logger routine.

@@ -111,15 +111,14 @@ public:
     // Send IFRAME content.
     static void send_static(filehandle_t fh, const string& content, const string& last_modified, const string& type)
     {
-        fh->write("HTTP/1.1 200 OK\r\n");
-        fh->write("Connection: close\r\n");
-        fh->write("Content-Type: " + type + "\r\n");
-        fh->write("Last-Modified: " + last_modified + "\r\n");
-        fh->write("Expires: Wed, 08 Jul 2037 22:53:52 GMT\r\n");
-        fh->write("Cache-Control: public\r\n");
-        fh->write("\r\n");
-        fh->write(content);
-        fh->flush(); // MUST be executed! shutdown() does not issue flush()!
+        fh->send("HTTP/1.1 200 OK\r\n");
+        fh->send("Connection: close\r\n");
+        fh->send("Content-Type: " + type + "\r\n");
+        fh->send("Last-Modified: " + last_modified + "\r\n");
+        fh->send("Expires: Wed, 08 Jul 2037 22:53:52 GMT\r\n");
+        fh->send("Cache-Control: public\r\n");
+        fh->send("\r\n");
+        fh->send(content);
         fh->shutdown(2); // don't use close, it breaks event machine!
     }
 
@@ -220,7 +219,6 @@ private:
             connected_fhs.del_from_id_by_fh(pair.id, fh);
         }
         pairs_by_fhs.remove_by_fh(fh);
-        fh->flush(); // MUST be executed! shutdown() does not issue flush()!
         return fh->shutdown(2);
     }
 
@@ -274,7 +272,7 @@ private:
             filehandle_t fh = pair.second.begin()->second.fh;
             // Attention! We MUST use print, not syswrite, because print correctly
             // continues broken transmits for large data packets.
-            int r1 = fh->write(out);
+            int r1 = fh->send(out);
             int r2 = _shutdown_fh(fh);
             logger(
                 "<- sending " + lexical_cast<string>(out_vec.size()) + " responses " +

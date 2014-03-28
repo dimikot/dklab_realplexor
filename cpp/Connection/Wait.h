@@ -82,7 +82,7 @@ public:
             // We send response AFTER reading IDs, because before
             // this reading we don't know if a static page or
             // a data was requested.
-            fh()->write(
+            fh()->send(
                 "HTTP/1.1 200 OK\r\n"
                 "Connection: close\r\n"
                 "Cache-Control: no-store, no-cache, must-revalidate\r\n"
@@ -90,7 +90,6 @@ public:
                 "Content-Type: text/javascript; charset=" + CONFIG.charset + "\r\n\r\n" +
                 " \r\n" // this immediate space plus text/javascript hides XMLHttpRequest in FireBug console
             );
-            fh()->flush();
 
             // Ignore all other input from IN and register identifiers.
             rdata = "";
@@ -130,7 +129,6 @@ public:
     virtual void ontimeout()
     {
         if (fh()) {
-            fh()->flush();
             fh()->shutdown(2);
         }
         Realplexor::Event::Connection::ontimeout();

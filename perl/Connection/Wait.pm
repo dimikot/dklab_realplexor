@@ -48,7 +48,6 @@ sub onread {
     }
 
     # Try to extract IDs from the new data chunk.
-    #print "----------\n" . $self->{data} . "\n---------------\n";
     my $pairs = Realplexor::Common::extract_pairs($self->{rdata});
     if (defined $pairs) {
         die "Empty identifier passed\n" if !@$pairs;
@@ -70,15 +69,14 @@ sub onread {
         # We send response AFTER reading IDs, because before
         # this reading we don't know if a static page or
         # a data was requested.
-        my $fh = $self->fh;
-        print $fh
+        $self->fh->send(
             "HTTP/1.1 200 OK\r\n" .
             "Connection: close\r\n" .
             "Cache-Control: no-store, no-cache, must-revalidate\r\n" .
             "Expires: Mon, 26 Jul 1997 05:00:00 GMT\r\n" .
             "Content-Type: text/javascript; charset=$CONFIG{CHARSET}\r\n\r\n" .
-            " \r\n"; # this immediate space plus text/javascript hides XMLHttpRequest in FireBug console
-        $fh->flush();
+            " \r\n" # this immediate space plus text/javascript hides XMLHttpRequest in FireBug console
+        );
 
         # Ignore all other input from IN and register identifiers.
         $self->{pairs} = $pairs;
@@ -115,8 +113,7 @@ sub ontimeout {
     my ($self) = @_;
     my $fh = $self->fh;
     if ($fh) {
-        $fh->flush();
-        shutdown($fh, 2);
+        $fh->shutdown(2);
     }
     $self->SUPER::ontimeout();
 }

@@ -120,7 +120,7 @@ public:
     // - 1 if the operation succeeded
     // - 0 if nothing was sent
     // - -1 in case of an error
-    int write(const char* buf, size_t len)
+    int send(const char* buf, size_t len)
     {
         while (true) {
             int n = ::write(fh, buf, len);
@@ -131,14 +131,9 @@ public:
         }
     }
 
-    int write(const string& s)
+    int send(const string& s)
     {
-        return write(s.c_str(), s.length());
-    }
-
-    void flush()
-    {
-        // Do nothing - sockets are unbuffered.
+        return send(s.c_str(), s.length());
     }
 
     // Returns 0 on error, 1 on success.

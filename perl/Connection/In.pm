@@ -128,7 +128,7 @@ sub try_process_cmd {
     my $cmd = uc $1;
     my $arg = $2;
     $self->debug("received aux command: $cmd" . (defined $arg && length($arg)? " $arg" : ""));
-    shutdown($self->fh, 0); # stop reading
+    $self->fh->shutdown(0); # stop reading
     my $method = "cmd_" . lc($cmd);
     $self->$method($arg);
     return 1;
@@ -259,12 +259,13 @@ sub cmd_stats {
 sub _send_response {
     my ($self, $rdata, $code) = ($_[0], \$_[1], $_[2]);
     my $fh = $self->fh;
-    print $fh "HTTP/1.0 " . ($code || "200 OK") . "\r\n";
-    print $fh "Content-Type: text/plain\r\n";
-    print $fh "Content-Length: " . length($$rdata) . "\r\n\r\n";
-    print $fh $$rdata;
-    $fh->flush(); # MUST be executed! else SIGPIPE may be issued
-    shutdown($fh, 2);
+    $fh->send(
+        "HTTP/1.0 " . ($code || "200 OK") . "\r\n" .
+        "Content-Type: text/plain\r\n" .
+        "Content-Length: " . length($$rdata) . "\r\n\r\n" .
+        $$rdata
+    );
+    $fh->shutdown(2);
     $self->{rdata} = "";
 }
 

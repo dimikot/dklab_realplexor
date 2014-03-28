@@ -95,7 +95,6 @@ sub handle_connect {
 # Called on data read.
 sub handle_read {
     my ($self, $connection, $type) = @_;
-    my $fh = $connection->fh;
     my $result = eval {
         # Timeout?
         if ($type & EV::TIMEOUT) {
@@ -123,7 +122,7 @@ sub handle_read {
     };
     return $result if defined $result;
     if ($@) {
-        $self->error($fh, $@);
+        $self->error($connection->fh, $@);
         return 0;
     }
 }

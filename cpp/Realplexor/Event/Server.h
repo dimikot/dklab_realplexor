@@ -104,7 +104,6 @@ public:
     // Returns false if the connection must be closed immediately.
     bool handle_read(shared_ptr<ConnClass> connection, int type)
     {
-        filehandle_t fh = connection->fh();
         try {
             // Timeout?
             if (type & EV_TIMEOUT) {
@@ -126,10 +125,10 @@ public:
             connection->onread(nread);
             return true;
         } catch (runtime_error& e) {
-            error(fh, e.what());
+            error(connection->fh(), e.what());
             return false;
         } catch (exception& e) {
-            error(fh, e.what());
+            error(connection->fh(), e.what());
             return false;
         }
         return true;

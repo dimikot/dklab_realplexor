@@ -25,9 +25,6 @@ sub new {
         fh     => $fh,
         server => $server,
         rdata  => "",
-        # Save peer address now, because it may be inaccessible
-        # in case of the manual socket shutdown.
-        addr   => ($fh->peerhost||'?') . ":" . ($fh->peerport||'?'),
     }, $class;
     $self->debug("connection opened");
     return $self;
@@ -48,15 +45,7 @@ sub DESTROY {
 # Reads available data chunk from fh and returns number of read bytes.
 sub read_available_data {
     my ($self) = @_;
-    my $fh = $self->{fh};
-    local $/;
-    my $data = <$fh>;
-    # End of the request reached (must never reach be cause of eof() check above?).
-    if (!defined $data) {
-        return 0;
-    }
-    $self->{rdata} .= $data;
-    return length($data);
+    return $self->fh->recv_and_append_to($self->{rdata});
 }
 
 # Called on timeout.
@@ -96,7 +85,7 @@ sub name {
 sub debug {
     my ($self, $msg) = @_;
     my $name = $self->name;
-    $self->{server}->debug($self->{addr}, ($name? "[$name] " : "") . $msg);
+    $self->{server}->debug($self->fh, ($name? "[$name] " : "") . $msg);
 }
 
 return 1;

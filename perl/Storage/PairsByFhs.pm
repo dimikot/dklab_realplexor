@@ -50,7 +50,7 @@ sub get_stats {
         push @result, "$fh => " . join(", ", map { $_->[0] . ":" . $_->[1] } @{$this->{$fh}});
     }
     my $result = @result? join("\n", @result) . "\n" : "";
-    $result =~ s/IO::Socket::INET=GLOB//sg;
+    $result =~ s/Realplexor::Event::FH=HASH//sg;
     return $result;
 }
 

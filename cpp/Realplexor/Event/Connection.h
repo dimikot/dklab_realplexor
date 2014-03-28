@@ -39,7 +39,7 @@ using std::exception;
 class Connection
 {
 private:
-    filehandle_t _fh;
+    fh_t _fh;
     ServerBase* _server;
 
 protected:
@@ -50,7 +50,7 @@ public:
     // Called on new connection.
     // DO NOT save event object here to avoid cyclic references!
     // Note that server is needed here for logging purposes only (e.g. server->error()).
-    Connection(const filehandle_t& fh, ServerBase* server): _fh(fh), _server(server)
+    Connection(const fh_t& fh, ServerBase* server): _fh(fh), _server(server)
     {
         DEBUG("connection opened");
     }
@@ -58,7 +58,7 @@ public:
     // Reads available data chunk from fh and returns number of read bytes.
     size_t read_available_data()
     {
-        return _fh->read_and_append_to(rdata);
+        return _fh->recv_and_append_to(rdata);
     }
 
     // Called on close.
@@ -101,7 +101,7 @@ public:
     }
 
     // Returns the socket.
-    filehandle_t fh()
+    fh_t fh()
     {
         return _fh;
     }

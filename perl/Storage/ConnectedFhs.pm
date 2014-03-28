@@ -57,7 +57,7 @@ sub get_stats {
         push @result, "$id => " . join(", ", sort keys %{$this->{$id}});
     }
     my $result = @result? join("\n", @result) . "\n" : "";
-    $result =~ s/IO::Socket::INET=GLOB//sg;
+    $result =~ s/Realplexor::Event::FH=HASH//sg;
     return $result;
 }
 

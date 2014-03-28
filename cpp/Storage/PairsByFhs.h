@@ -43,17 +43,17 @@ public:
 
     PairsByFhs() {}
 
-    void set_pairs_for_fh(filehandle_t fh, shared_ptr<DataPairChain> list)
+    void set_pairs_for_fh(fh_t fh, shared_ptr<DataPairChain> list)
     {
         storage[fh.get()] = list;
     }
 
-    void remove_by_fh(filehandle_t fh)
+    void remove_by_fh(fh_t fh)
     {
         storage.erase(fh.get());
     }
 
-    const DataPairChain& get_pairs_by_fh(filehandle_t fh)
+    const DataPairChain& get_pairs_by_fh(fh_t fh)
     {
         static DataPairChain empty;
         return storage.count(fh.get())? *storage[fh.get()] : empty;

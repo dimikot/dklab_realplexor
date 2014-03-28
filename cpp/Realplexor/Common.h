@@ -109,7 +109,7 @@ public:
     }
 
     // Send IFRAME content.
-    static void send_static(filehandle_t fh, const string& content, const string& last_modified, const string& type)
+    static void send_static(fh_t fh, const string& content, const string& last_modified, const string& type)
     {
         fh->send("HTTP/1.1 200 OK\r\n");
         fh->send("Connection: close\r\n");
@@ -137,7 +137,7 @@ public:
             data_to_send.clean_old_data_for_id(id, CONFIG.max_data_for_id);
         }
 
-        // Collect data to be sent to each connection at %data_by_fh.
+        // Collect data to be sent to each connection at data_by_fh.
         // For each connection also collect matched IDs, so each client
         // receives only the list of IDs which is matched by his request
         // (client does not see IDs of other clients).
@@ -158,7 +158,7 @@ public:
             for (const DataCursorFhByFh::value_type& cursor_and_fh: fhs_hash) {
                 // Process a single FH which listens this ID at listen_cursor.
                 cursor_t listen_cursor = cursor_and_fh.second.cursor;
-                filehandle_t fh = cursor_and_fh.second.fh;
+                fh_t fh = cursor_and_fh.second.fh;
 
                 // What other IDs are listened by this FH.
                 const DataPairChain& what_listens_this_fh = pairs_by_fhs.get_pairs_by_fh(fh);
@@ -212,7 +212,7 @@ public:
 private:
 
     // Shutdown a connection and remove all references to it.
-    static int _shutdown_fh(filehandle_t fh)
+    static int _shutdown_fh(fh_t fh)
     {
         // Remove all references to $fh from everywhere.
         for (auto& pair: pairs_by_fhs.get_pairs_by_fh(fh)) {
@@ -269,7 +269,7 @@ private:
 
             // Join response blocks into one "multipart".
             string out = "[\n" + join(out_vec, ",\n") + "\n]";
-            filehandle_t fh = pair.second.begin()->second.fh;
+            fh_t fh = pair.second.begin()->second.fh;
             // Attention! We MUST use print, not syswrite, because print correctly
             // continues broken transmits for large data packets.
             int r1 = fh->send(out);

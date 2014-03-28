@@ -184,7 +184,7 @@ sub _async {
     } else {
         # Child process.
         $sub->();
-        close($self->fh);
+        $self->fh->close();
         # We MUST use _exit(0) to avoid destructor calls.
         _exit(0);
     }
@@ -258,14 +258,13 @@ sub cmd_stats {
 # Send response anc close the connection.
 sub _send_response {
     my ($self, $rdata, $code) = ($_[0], \$_[1], $_[2]);
-    my $fh = $self->fh;
-    $fh->send(
+    $self->fh->send(
         "HTTP/1.0 " . ($code || "200 OK") . "\r\n" .
         "Content-Type: text/plain\r\n" .
         "Content-Length: " . length($$rdata) . "\r\n\r\n" .
         $$rdata
     );
-    $fh->shutdown(2);
+    $self->fh->shutdown(2);
     $self->{rdata} = "";
 }
 

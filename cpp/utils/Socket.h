@@ -100,7 +100,7 @@ public:
 
     // Appends read data to the end of the string.
     // Returns the number of read bytes.
-    size_t read_and_append_to(string& s)
+    size_t recv_and_append_to(string& s)
     {
         size_t nread = 0;
         while (true) {
@@ -142,8 +142,5 @@ public:
         return ::shutdown(fh, how) < 0? 0 : 1;
     }
 };
-
-// "Scalar" value of a socket with closing on last reference destruction.
-typedef std::shared_ptr<Socket> filehandle_t;
 
 #endif

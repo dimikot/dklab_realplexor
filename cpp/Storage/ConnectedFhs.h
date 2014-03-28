@@ -44,14 +44,14 @@ public:
 
     ConnectedFhs() {}
 
-    void add_to_id(const ident_t& id, cursor_t cursor, filehandle_t fh)
+    void add_to_id(const ident_t& id, cursor_t cursor, fh_t fh)
     {
         DataCursorFh &e = storage[id][fh.get()];
         e.cursor = cursor;
         e.fh = fh;
     }
 
-    void del_from_id_by_fh(const ident_t& id, filehandle_t fh)
+    void del_from_id_by_fh(const ident_t& id, fh_t fh)
     {
         if (storage.count(id)) {
             storage[id].erase(fh.get());

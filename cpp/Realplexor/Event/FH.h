@@ -20,25 +20,57 @@
 //@ per Storage and one CONFIG, they are like singletons.
 //@
 
-#ifndef REALPLEXOR_EVENT_SIGNAL_H
-#define REALPLEXOR_EVENT_SIGNAL_H
+//
+// Fiber Handle: an opened socket (connection) with event-driven write buffering support.
+//
+// The task is to allow unlimited amount of data to be written to a client
+// connection, even if this amount is larger than Unix socket buffers
+// (by default in Perl this buffer is near 160K, in C++ it's near 2K).
+//
+
+#ifndef REALPLEXOR_EVENT_FH_H
+#define REALPLEXOR_EVENT_FH_H
 
 namespace Realplexor { namespace Event {
+using std::shared_ptr;
+using std::exception;
 
-template<typename Cb>
-class Signal
+class FH
 {
-    ev0x::sig<Cb> w;
+    shared_ptr<Socket> _sock;
 
 public:
-
-    Signal(int signal, Cb handler): w(handler)
+    FH(shared_ptr<Socket> sock): _sock(sock)
     {
-        w.set(signal);
-        w.start();
+        _sock->blocking(false);
     }
 
-    virtual ~Signal() {}
+    virtual ~FH() {}
+
+    size_t recv_and_append_to(string& s)
+    {
+        return _sock->recv_and_append_to(s);
+    }
+
+    int send(const string& s)
+    {
+        return _sock->send(s);
+    }
+
+    int shutdown(int how)
+    {
+        return _sock->shutdown(how);
+    }
+
+    string peeraddr()
+    {
+        return _sock->peeraddr();
+    }
+
+    int fileno()
+    {
+        return _sock->fileno();
+    }
 };
 
 }}

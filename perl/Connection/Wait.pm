@@ -111,9 +111,8 @@ sub onread {
 # Called on timeout (send error message).
 sub ontimeout {
     my ($self) = @_;
-    my $fh = $self->fh;
-    if ($fh) {
-        $fh->shutdown(2);
+    if ($self->fh) {
+        $self->fh->shutdown(2);
     }
     $self->SUPER::ontimeout();
 }

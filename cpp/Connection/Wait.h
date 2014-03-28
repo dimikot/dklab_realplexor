@@ -36,7 +36,7 @@ class Wait: public Realplexor::Event::Connection
     string _name;
 
 public:
-    Wait(filehandle_t fh, Realplexor::Event::ServerBase* server): Connection(fh, server)
+    Wait(fh_t fh, Realplexor::Event::ServerBase* server): Connection(fh, server)
     {
         pairs.reset(new DataPairChain());
     }

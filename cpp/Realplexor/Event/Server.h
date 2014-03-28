@@ -44,19 +44,19 @@ public:
     virtual ~ServerBase() {}
 
     // Controls debug messages.
-    virtual void debug_(const filehandle_t& fh, const string& msg)
+    virtual void debug_(const fh_t& fh, const string& msg)
     {
         message(fh, "DEBUG: " + msg);
     }
 
     // Controls error messages.
-    virtual void error(const filehandle_t& fh, const string& msg)
+    virtual void error(const fh_t& fh, const string& msg)
     {
         message(fh, "ERROR: " + msg);
     }
 
     // Controls info messages.
-    virtual void message(const filehandle_t& fh, const string& msg0)
+    virtual void message(const fh_t& fh, const string& msg0)
     {
         string msg = trim_right_copy(msg0);
         if (fh) {
@@ -135,11 +135,11 @@ public:
     }
 
     // Called on a new connect.
-    void handle_connect(filehandle_t fh)
+    void handle_connect(shared_ptr<Socket> sock)
     {
-        filehandle_t socket(fh->accept());
-        socket->blocking(false);
-        shared_ptr<ConnClass> connection(new ConnClass(socket, this));
+        shared_ptr<Socket> accepted(sock->accept());
+        fh_t fh(new Realplexor::Event::FH(accepted));
+        shared_ptr<ConnClass> connection(new ConnClass(fh, this));
 
         // This holds all objects needed within event handlers.
         // Unfortunately we cannot use C++0x closures, because captured vars
@@ -181,7 +181,7 @@ public:
         // Initialize IO event. When happens, this event restart Timer & IO events.
         closure->io.reset(new ev::io());
         closure->io->ev::io::set<IoTimerClosure, &IoTimerClosure::handle>(closure);
-        closure->io->ev::io::set(socket->fileno(), EV_READ);
+        closure->io->ev::io::set(accepted->fileno(), EV_READ);
         closure->io->start();
 
         // Initialize Timer event. When happens, this event destroys Timer & IO event.
@@ -198,29 +198,29 @@ public:
     // Croaks in case of error.
     shared_ptr<ev::io> add_listen(string addr)
     {
-        filehandle_t fh(new Socket(addr));
-        fh->blocking(false);
+        shared_ptr<Socket> sock(new Socket(addr));
+        sock->blocking(false);
 
         // This holds all objects needed within event handlers.
         struct IoClosure
         {
-            filehandle_t        fh;
-            Server<ConnClass>*  server;
+            shared_ptr<Socket> sock;
+            Server<ConnClass>* server;
             void handle(ev::io& w, int revents)
             {
-                server->handle_connect(fh);
+                server->handle_connect(sock);
             }
         };
 
         // This object is NEVER deleted (we assume that Server object lives forever).
         IoClosure* closure = new IoClosure();
         closure->server = this;
-        closure->fh = fh;
+        closure->sock = sock;
 
         // Create an event and return it.
         shared_ptr<ev::io> evt(new ev::io());
         evt->ev::io::set<IoClosure, &IoClosure::handle>(closure);
-        evt->ev::io::set(fh->fileno(), EV_READ);
+        evt->ev::io::set(sock->fileno(), EV_READ);
         evt->start();
 
         message(0, "listening " + addr);

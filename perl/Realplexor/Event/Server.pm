@@ -13,6 +13,7 @@
 ##
 package Realplexor::Event::Server;
 use strict;
+use Realplexor::Event::FH;
 use IO::Socket::INET;
 use EV;
 use Carp;
@@ -56,15 +57,15 @@ sub new {
 # Croaks in case of error.
 sub add_listen {
     my ($self, $addr) = @_;
-    my $fh = IO::Socket::INET->new(
+    my $sock = IO::Socket::INET->new(
         LocalAddr   => $addr,
         Proto       => 'tcp',
         ReuseAddr   => SO_REUSEADDR,
         Listen      => 50000,
         Blocking    => 1,
     ) or croak $@;
-    my $event = EV::io $fh, EV::READ, sub {
-        $self->handle_connect($fh);
+    my $event = EV::io $sock, EV::READ, sub {
+        $self->handle_connect($sock);
     };
     $self->message(undef, "listening $addr");
     return $event;
@@ -72,24 +73,25 @@ sub add_listen {
 
 # Called on a new connect.
 sub handle_connect {
-    my ($self, $fh) = @_;
+    my ($self, $sock) = @_;
     eval {
-        my $socket = $fh->accept() or die "accept failed: $@";
-        $socket->blocking(0); # this line is REALLY needed, else a hang may appear
-        binmode($socket);
-        my $connection = $self->{connectionclass}->new($socket, $self);
+        my $accepted = $sock->accept() or die "accept failed: $@";
+        $accepted->blocking(0); # this line is REALLY needed, else a hang may appear
+        binmode($accepted);
+        my $fh = new Realplexor::Event::FH($accepted);
+        my $connection = $self->{connectionclass}->new($fh, $self);
         my $callback; $callback = sub {
             # Attention! $callback is a circular reference here!
             if ($self->handle_read($connection, $_[0])) {
-                EV::once($socket, EV::READ, $self->{timeout}, $callback);
+                EV::once($accepted, EV::READ, $self->{timeout}, $callback);
             } else {
                 # Break a circular reference in $callback when disconnected.
                 $callback = undef;
             }
         };
-        EV::once($socket, EV::READ, $self->{timeout}, $callback);
+        EV::once($accepted, EV::READ, $self->{timeout}, $callback);
     };
-    $self->error($fh, $@) if $@;
+    $self->error($sock, $@) if $@;
 }
 
 # Called on data read.
@@ -144,7 +146,7 @@ sub message {
     my ($self, $addr, $msg) = @_;
     chomp($msg);
     if (ref $addr) {
-        $addr = ($addr->peerhost||'?') . ":" . ($addr->peerport||'?');
+        $addr = $addr->peeraddr;
     }
     $msg = $addr . ": " . $msg if $addr;
     $msg = $self->{name} . ": " . $msg;

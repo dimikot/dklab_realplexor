@@ -37,7 +37,7 @@ class In: public Realplexor::Event::Connection
 public:
 
     // Called on a new connection.
-    In(filehandle_t fh, Realplexor::Event::ServerBase* server): Connection(fh, server)
+    In(fh_t fh, Realplexor::Event::ServerBase* server): Connection(fh, server)
     {
         pairs.reset(new DataPairChain());
         limit_ids.reset(new LimitIdsSet());

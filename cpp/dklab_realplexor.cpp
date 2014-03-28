@@ -75,6 +75,7 @@ using std::exception;
 #include "dklab_realplexor.h"
 #include "Realplexor/Config.h"
 #include "Realplexor/Tools.h"
+#include "Realplexor/Event/FH.h"
 #include "Realplexor/Event/Server.h"
 #include "Realplexor/Event/Timer.h"
 #include "Realplexor/Event/Signal.h"

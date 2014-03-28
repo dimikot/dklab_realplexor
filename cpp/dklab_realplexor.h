@@ -26,6 +26,10 @@
 namespace Realplexor {
 using std::shared_ptr;
 
+// "Scalar" value of a connection with closing on last reference destruction.
+namespace Event { class FH; };
+typedef std::shared_ptr<Realplexor::Event::FH> fh_t;
+
 // Reference to a logger procedure.
 typedef void (*logger_t)(const string&);
 
@@ -89,9 +93,9 @@ typedef list<DataEvent> DataEventChain;
 // Which cursor at which filehandle is current.
 struct DataCursorFh {
     cursor_t cursor;
-    filehandle_t fh;
+    fh_t fh;
     DataCursorFh() {}
-    DataCursorFh(cursor_t cursor, filehandle_t fh): cursor(cursor), fh(fh) {}
+    DataCursorFh(cursor_t cursor, fh_t fh): cursor(cursor), fh(fh) {}
 };
 typedef map<void*, DataCursorFh> DataCursorFhByFh;
 
@@ -108,7 +112,7 @@ typedef list<DataChunk> DataChunkChain;
 // Piece of data ready to be sent to a fh.
 struct DataToSendChunk
 {
-    filehandle_t fh;
+    fh_t fh;
     cursor_t cursor;
     shared_ptr<string> rdata;
     map<ident_t, cursor_t> ids;
@@ -119,7 +123,7 @@ private:
     DataToSendChunk& operator=(const DataToSendChunk& p);
 };
 typedef map<const string*, DataToSendChunk> DataToSendByDataRef;
-typedef map<const Socket*, DataToSendByDataRef> DataToSendByFh;
+typedef map<const fh_t::element_type*, DataToSendByDataRef> DataToSendByFh;
 
 string cursor_to_string(cursor_t cur)
 {

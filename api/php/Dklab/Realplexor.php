@@ -2,7 +2,7 @@
 /**
  * Dklab_Realplexor PHP API.
  *
- * @version 1.31
+ * @version 1.41
  */
 class Dklab_Realplexor
 {
@@ -13,14 +13,16 @@ class Dklab_Realplexor
     private $_login;
     private $_password;
 
-    /**
-     * Create new realplexor API instance.
-     *
-     * @param string $host        Host of IN line.
-     * @param string $port        Port of IN line (if 443, SSL is used).
-     * @param string $namespace   Namespace to use.
-     * @param string $identifier  Use this "identifier" marker instead of the default one.
-     */
+	/**
+	 * Create new realplexor API instance.
+	 *
+	 * @param string $host Host of IN line.
+	 * @param string $port Port of IN line (if 443, SSL is used).
+	 * @param string $namespace Namespace to use.
+	 * @param string $identifier Use this "identifier" marker instead of the default one.
+	 *
+	 * @throws Dklab_Realplexor_Exception
+	 */
     public function __construct($host, $port, $namespace = null, $identifier = "identifier")
     {
         $this->_host = $host;
@@ -32,14 +34,15 @@ class Dklab_Realplexor
         }
     }
 
-    /**
-     * Set login and password to access Realplexor (if the server needs it).
-     * This method does not check credentials correctness.
-     *
-     * @param string $login
-     * @param string $password
-     * @return void
-     */
+	/**
+	 * Set login and password to access Realplexor (if the server needs it).
+	 * This method does not check credentials correctness.
+	 *
+	 * @param string $login
+	 * @param string $password
+	 *
+	 * @return void
+	 */
     public function logon($login, $password)
     {
         $this->_login = $login;
@@ -48,20 +51,22 @@ class Dklab_Realplexor
         $this->_namespace = $this->_login . "_" . $this->_namespace;
     }
 
-    /**
-     * Send data to realplexor.
-     * Throw Dklab_Realplexor_Exception in case of error.
-     *
-     * @param mixed $idsAndCursors    Target IDs in form of: array(id1 => cursor1, id2 => cursor2, ...)
-     *                               of array(id1, id2, id3, ...). If sending to a single ID,
-     *                               you may pass it as a plain string, not array.
-     * @param mixed $data            Data to be sent (any format, e.g. nested arrays are OK).
-     * @param array $showOnlyForIds  Send this message to only those who also listen any of these IDs.
-     *                               This parameter may be used to limit the visibility to a closed
-     *                               number of cliens: give each client an unique ID and enumerate
-     *                               client IDs in $showOnlyForIds to not to send messages to others.
-     * @return void
-     */
+	/**
+	 * Send data to realplexor.
+	 * Throw Dklab_Realplexor_Exception in case of error.
+	 *
+	 * @param mixed $idsAndCursors Target IDs in form of: array(id1 => cursor1, id2 => cursor2, ...)
+	 *                               of array(id1, id2, id3, ...). If sending to a single ID,
+	 *                               you may pass it as a plain string, not array.
+	 * @param mixed $data Data to be sent (any format, e.g. nested arrays are OK).
+	 * @param array $showOnlyForIds Send this message to only those who also listen any of these IDs.
+	 *                               This parameter may be used to limit the visibility to a closed
+	 *                               number of cliens: give each client an unique ID and enumerate
+	 *                               client IDs in $showOnlyForIds to not to send messages to others.
+	 *
+	 * @throws Dklab_Realplexor_Exception
+	 * @throws Exception
+	 */
     public function send($idsAndCursors, $data, $showOnlyForIds = null)
     {
         $data = json_encode($data);
@@ -137,14 +142,16 @@ class Dklab_Realplexor
         return array_keys($this->cmdOnlineWithCounters($idPrefixes));
     }
 
-    /**
-     * Return all Realplexor events (e.g. ID offline/offline changes)
-     * happened after $fromPos cursor.
-     *
-     * @param string $fromPos        Start watching from this cursor.
-     * @param array $idPrefixes        Watch only changes of IDs with these prefixes.
-     * @return array                   List of array("event" => ..., "cursor" => ..., "id" => ...).
-     */
+	/**
+	 * Return all Realplexor events (e.g. ID offline/offline changes)
+	 * happened after $fromPos cursor.
+	 *
+	 * @param string $fromPos Start watching from this cursor.
+	 * @param array $idPrefixes Watch only changes of IDs with these prefixes.
+	 *
+	 * @return array List of array("event" => ..., "cursor" => ..., "id" => ...).
+	 * @throws Dklab_Realplexor_Exception
+	 */
     public function cmdWatch($fromPos, $idPrefixes = null)
     {
         $idPrefixes = $idPrefixes !== null? (array)$idPrefixes : array();
@@ -198,15 +205,18 @@ class Dklab_Realplexor
         return $this->_send(null, "$cmd\n");
     }
 
-    /**
-     * Internal method.
-     * Send specified data to IN channel. Return response data.
-     * Throw Dklab_Realplexor_Exception in case of error.
-     *
-     * @param string $identifier  If set, pass this identifier string.
-     * @param string $data        Data to be sent.
-     * @return string             Response from IN line.
-     */
+	/**
+	 * Internal method.
+	 * Send specified data to IN channel. Return response data.
+	 * Throw Dklab_Realplexor_Exception in case of error.
+	 *
+	 * @param string $identifier If set, pass this identifier string.
+	 * @param string $body Data to be sent.
+	 *
+	 * @return string Response from IN line.
+	 * @throws Dklab_Realplexor_Exception
+	 * @throws Exception
+	 */
     private function _send($identifier, $body)
     {
         // Build HTTP request.

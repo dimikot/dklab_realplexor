@@ -77,7 +77,7 @@ sub handle_connect {
     eval {
         my $accepted = $sock->accept() or die "accept failed: $@";
         $accepted->blocking(0); # this line is REALLY needed, else a hang may appear
-        binmode($accepted);
+        binmode($accepted, ':utf8');
         my $fh = new Realplexor::Event::FH($accepted);
         my $connection = $self->{connectionclass}->new($fh, $self);
         my $callback; $callback = sub {

@@ -17,6 +17,12 @@ For Ubuntu 12.04, the steps are simple:
 # apt-get install gcc libboost1.48 libev4 libev-dev libmemcached-dev
 # bash ./Make.sh
 
+Build on Ubuntu 20.04
+---------------------
+
+# apt-get install build-essential libboost1.71-all-dev libev4 libev-dev libmemcached-dev
+# bash ./Make.sh
+
 
 Build dklab_realplexor binary on other Linux versions
 -----------------------------------------------------

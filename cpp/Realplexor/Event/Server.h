@@ -91,10 +91,10 @@ public:
                 lastAddr = addr;
                 events.push_back(add_listen(addr));
             }
-        } catch (runtime_error e) {
+        } catch (runtime_error& e) {
             events.clear();
             die(lastAddr + ": " + e.what());
-        } catch (exception e) {
+        } catch (exception& e) {
             events.clear();
             die(lastAddr + ": unknown exception");
         }

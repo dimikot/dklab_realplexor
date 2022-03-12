@@ -46,7 +46,7 @@ public:
     {
         try {
             return lexical_cast<T>(get(k));
-        } catch (bad_lexical_cast e) {
+        } catch (bad_lexical_cast& e) {
             throw out_of_range("Error while casting of the key " + k + " presented in " + name);
         }
     }

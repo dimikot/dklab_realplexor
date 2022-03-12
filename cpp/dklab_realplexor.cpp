@@ -20,6 +20,8 @@
 //@ per Storage and one CONFIG, they are like singletons.
 //@
 
+#pragma GCC diagnostic ignored "-Wunused-result"
+
 #include <vector>
 #include <list>
 #include <unordered_set>
